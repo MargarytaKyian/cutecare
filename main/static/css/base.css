@@ -304,6 +304,24 @@ h5 {
     width: 180px;
 }
 
+.remove-btn {
+    background-color: white;
+    box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 30px;
+    border: 1px solid #a8a8a8;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.5s ease;
+}
+
+.remove-btn:hover {
+    border: 1px solid black;
+}
+
 .cart-btn {
     display: flex;
     align-items: center;
@@ -363,3 +381,4 @@ h5 {
 .add-to-cart-btn:hover {
     border: 1px solid black;
 }
+

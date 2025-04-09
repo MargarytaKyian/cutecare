@@ -30,11 +30,11 @@
                         <div class="cart-cart-price">
                             {% if product.discount %}
                                 <div class="cart-discount d-flex gap-2">
-                                    <p class="line">₴{{ product.price }}</p>
-                                    <p>₴{{ product.sell_price }}</p>
+                                    <p class="line">₴{{ product.price|floatformat:2 }}</p>
+                                    <p>₴{{ product.sell_price|floatformat:2 }}</p>
                                 </div>
                             {% else %}
-                                <p class="price">₴{{ product.price }}</p>
+                                <p class="price">₴{{ product.price|floatformat:2 }}</p>
                             {% endif %}
                         </div>
                     </div>
