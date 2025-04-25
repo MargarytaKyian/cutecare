@@ -7,7 +7,7 @@
     <title>{% block title %}{% endblock title %}</title>
 
     {% comment %} boostrap {% endcomment %}
-    <link rel="stylesheet" href="{% static 'bootstrap\css\bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
     {% comment %} css {% endcomment %}
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
@@ -28,7 +28,11 @@
     
             <div class="header-profile pt-2">
                 <a href="{% url "cart:cart_detail" %}"><img src="{% static 'img/basket.svg' %}" width="27" height="28" class="basket" alt=""></a>
-                <a href="{% url "users:login" %}" class="m-2">LOGIN</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url "users:profile" %}">PROFILE</a>
+                {% else %}
+                    <a href="{% url "users:login" %}" class="m-2">LOGIN</a>
+                {% endif %}
                 <p class="cart-quantity">
                     {% with cart_quantity=cart|length %}
                         {% if cart_quantity > 0 %}
@@ -51,6 +55,6 @@
 
 
     {% comment %} js bootstrap {% endcomment %}
-    <script> src="{% static 'bootstrap\js\bootstrap.bundle.min.js' %}" </script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 </body>
 </html>
