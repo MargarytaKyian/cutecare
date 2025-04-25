@@ -381,3 +381,13 @@ h5 {
 .add-to-cart-btn:hover {
     border: 1px solid black;
 }
+
+/* Зірки відгуків */
+.review span {
+    font-size: 1.2rem;
+    color: gold;
+  }
+  .review span:last-child {
+    margin-right: 0.2rem;
+  }
+  

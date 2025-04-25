@@ -25,6 +25,13 @@
             <div class="header-logo">
                 <a href="/"><img src="{% static 'img/petshopimg.jpg' %}" alt="" class="petshop-logo"></a>
             </div>
+
+            <form id="search-form" action="{% url 'main:product_search' %}" method="get" class="position-relative d-flex align-items-center mx-3">
+                <input type="text" id="search-input" name="q" class="form-control" placeholder="Пошук товарів…" autocomplete="off">
+            <button type="submit" class="btn btn-outline-secondary ml-2">🔍</button>
+            <div id="suggestions" class="list-group position-absolute w-100" style="top:100%; z-index:1000;">
+            </div>
+            </form>             
     
             <div class="header-profile pt-2">
                 <a href="{% url "cart:cart_detail" %}"><img src="{% static 'img/basket.svg' %}" width="27" height="28" class="basket" alt=""></a>
@@ -56,5 +63,9 @@
 
     {% comment %} js bootstrap {% endcomment %}
     <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    {% comment %} js autosearch {% endcomment %}
+    <script>const AUTOCOMPLETE_URL = "{% url 'main:autocomplete' %}";</script>
+    {% comment %} search js {% endcomment %}
+    <script src="{% static 'js/search.js' %}"></script>
 </body>
 </html>

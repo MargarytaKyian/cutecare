@@ -1,0 +1,28 @@
+{% extends "main/base.html" %}
+{% block title %}Результати пошуку: “{{ query }}”{% endblock %}
+
+{% block content %}
+  <h1>Результати пошуку за “{{ query }}”</h1>
+
+  {% if products %}
+    <div class="row">
+      {% for product in products %}
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <a href="{{ product.get_absolute_url }}">
+              {% if product.image %}
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+              {% endif %}
+              <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text">{{ product.sell_price }} ₴</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>За вашим запитом нічого не знайдено.</p>
+  {% endif %}
+{% endblock %}

@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 from .models import Category, Product
 from cart.forms import CartAddProductForm
 
@@ -41,3 +42,26 @@ def product_list(request, category_slug=None):
                    'categories': categories,
                    'products': current_page,
                    'slug_url': category_slug})
+
+
+def autocomplete(request):
+    q = request.GET.get('q', '').strip()
+    if not q:
+        return JsonResponse([], safe=False)
+    qs = Product.objects.filter(name__icontains=q, available=True)[:10]
+    data = [
+        {
+            'name': prod.name,
+            'url': prod.get_absolute_url()
+        }
+        for prod in qs
+    ]
+    return JsonResponse(data, safe=False)
+
+def product_search(request):
+    query = request.GET.get('q', '').strip()
+    products = Product.objects.filter(name__icontains=query, available=True) if query else Product.objects.none()
+    return render(request, 'main/product/search_results.html', {
+        'products': products,
+        'query': query
+    })
