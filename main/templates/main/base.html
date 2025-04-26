@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
     {% comment %} css {% endcomment %}
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    {% comment %} font-awesome {% endcomment %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
 </head>
 <body>
@@ -19,6 +21,7 @@
                 <ul class="header-list d-flex">
                     <li><a href="/" class="nav-a m-3">Home</a></li>
                     <li><a href="/shop" class="nav-a m-3">Shop</a></li>
+                    <li><a href="/assistant" class="nav-a m-3">Assistant</a></li>
                 </ul>
             </nav>
     
@@ -34,11 +37,18 @@
             </form>             
     
             <div class="header-profile pt-2">
+                <a href=""><img src="{% static 'img/bookmark-heart.svg' %}" width="30" height="30" class="heart-mark" alt=""></a>
                 <a href="{% url "cart:cart_detail" %}"><img src="{% static 'img/basket.svg' %}" width="27" height="28" class="basket" alt=""></a>
                 {% if user.is_authenticated %}
-                    <a href="{% url "users:profile" %}">PROFILE</a>
+            <a href="{% url 'users:profile' %}" class="m-2">
+                {% if user.image %}
+                    <img src="{{ user.image.url }}" alt="Profile" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover;">
                 {% else %}
-                    <a href="{% url "users:login" %}" class="m-2">LOGIN</a>
+                    <img src="{% static 'img/person-circle.svg' %}" width="40" height="40" class="person-circle" alt="" style="opacity: 0.85;">
+                {% endif %}
+            </a>
+                {% else %}
+                    <a href="{% url 'users:login' %}" class="m-2">LOGIN</a>
                 {% endif %}
                 <p class="cart-quantity">
                     {% with cart_quantity=cart|length %}
@@ -67,5 +77,8 @@
     <script>const AUTOCOMPLETE_URL = "{% url 'main:autocomplete' %}";</script>
     {% comment %} search js {% endcomment %}
     <script src="{% static 'js/search.js' %}"></script>
+    {% comment %} script js {% endcomment %}
+    <script src="{% static 'js/script.js' %}"></script>
+
 </body>
 </html>

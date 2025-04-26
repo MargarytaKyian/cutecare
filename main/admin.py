@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, ProductImage
+from .models import Category, Product, ProductImage, ReviewRating
 
 # Register your models here.
 
@@ -23,3 +23,6 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ['price', 'available', 'discount']
     prepopulated_fields = {'slug': ('name',)}
     inlines = [ProductImageInline]
+
+
+admin.site.register(ReviewRating)

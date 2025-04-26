@@ -48,9 +48,12 @@ def registration(request):
 @login_required
 def profile(request):
     if request.method == 'POST':
-        form = ProfileForm(data=request.POST, instance=request.user,
-                           files=request.FILES)
-        if form.is_valid():
+        form = ProfileForm(data=request.POST, instance=request.user, files=request.FILES)
+        if 'delete_avatar' in request.POST:
+            request.user.image.delete(save=True)
+            messages.success(request, 'Avatar has been deleted')
+            return HttpResponseRedirect(reverse('user:profile'))
+        elif form.is_valid():
             form.save()
             messages.success(request, 'Profile was changed')
             return HttpResponseRedirect(reverse('user:profile'))
@@ -63,9 +66,8 @@ def profile(request):
             queryset=OrderItem.objects.select_related('product'),
         )
     ).order_by('-id')
-    return render(request, 'users/profile.html',
-                  {'form': form,
-                   'orders': orders})
+
+    return render(request, 'users/profile.html', {'form': form, 'orders': orders})
 
 
 def logout(request):

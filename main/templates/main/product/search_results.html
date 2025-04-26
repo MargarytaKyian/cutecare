@@ -15,7 +15,7 @@
               {% endif %}
               <div class="card-body">
                 <h5 class="card-title">{{ product.name }}</h5>
-                <p class="card-text">{{ product.sell_price }} ₴</p>
+                <p class="card-text">{{ product.sell_price|floatformat:2 }} ₴</p>
               </div>
             </a>
           </div>
