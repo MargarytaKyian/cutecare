@@ -1,0 +1,21 @@
+{% extends 'main/base.html' %}
+{% block title %}Збережені товари{% endblock %}
+{% block content %}
+<h2 class="my-4">Збережені товари</h2>
+<div class="row">
+    {% for favorite in favorites %}
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <img src="{{ favorite.product.image.url }}" class="card-img-top" alt="{{ favorite.product.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ favorite.product.name }}</h5>
+                    <p class="card-text">{{ favorite.product.description|truncatechars:100 }}</p>
+                    <a href="{% url 'favorite:remove_from_favorite' favorite.product.id %}" class="btn btn-danger">Видалити</a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>Наразі немає збережених товарів.</p>
+    {% endfor %}
+</div>
+{% endblock %}

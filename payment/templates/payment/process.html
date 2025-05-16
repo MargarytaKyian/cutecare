@@ -6,7 +6,7 @@
 {% block content %}
     <div class="window">
         <h2 class="pay-title">
-            Payment
+            Оплата
         </h2>
         <div class="pay-card d-flex">
             <div class="cart-cardproc">
@@ -21,7 +21,7 @@
                                     <p>{{ product.name }}</p>
                                 </div>
                                 <div class="cart-card-q">
-                                    <p>Quantity: {{ item.quantity }}</p>
+                                    <p>Кількість: {{ item.quantity }}</p>
                                 </div>
                             </div>
                             <form action="{% url "cart:cart_remove" product.id %}" method="post">

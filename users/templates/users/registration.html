@@ -1,48 +1,209 @@
 {% extends "main/base.html" %}
 {% load static %}
 
-{% block title %}Registration{% endblock title %}
+{% block title %}Реєстрація | CuteCare{% endblock %}
 
 {% block content %}
-    <section class="login-reg d-flex">
-        <div class="login-title">
-            <h2>Registration</h2>
-            <form action="{% url "user:registration" %}" method="post">
-                {% csrf_token %}
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="id_first_name" class="form-label form-stylereg">First Name</label>
-                        <input type="text" class="form-control form-stylereg" id="id_first_name" value="{% if form.first_name.value %}{{ form.first_name.value }}{% endif %}"
-                        name="first_name" placeholder="Your First Name" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="id_last_name" class="form-label form-stylereg">Last Name</label>
-                        <input type="text" class="form-control form-stylereg" id="id_last_name" value="{% if form.last_name.value %}{{ form.last_name.value }}{% endif %}"
-                        name="last_name" placeholder="Your Last Name" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="id_username" class="form-label form-stylereg">Username</label>
-                        <input type="text" class="form-control form-stylereg" id="id_username" value="{% if form.username.value %}{{ form.username.value }}{% endif %}"
-                        name="username" placeholder="Your Username" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="id_email" class="form-label form-stylereg">Email</label>
-                        <input type="email" class="form-control form-stylereg" id="id_email" value="{% if form.email.value %}{{ form.email.value }}{% endif %}"
-                        name="email" placeholder="Your Email" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="id_password1" class="form-label form-stylereg">Password</label>
-                        <input type="password" class="form-control form-stylereg" id="id_password1" value="{% if form.password1.value %}{{ form.password1.value }}{% endif %}"
-                        name="password1" placeholder="Your Password" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="id_password2" class="form-label form-stylereg">Confirm Password</label>
-                        <input type="password" class="form-control form-stylereg" id="id_password2" value="{% if form.password2.value %}{{ form.password2.value }}{% endif %}"
-                        name="password2" placeholder="Your Password" required>
-                    </div>
-                </div>
-                <button type="submit" class="login-btn form-style">Register</button>
-            </form>
+
+<section class="py-0 pb-10 bg-gradient-to-br from-indigo-100 via-white to-indigo-200 min-h-screen flex items-center justify-center" id="registration-section">
+
+  <div class="bg-white p-6 sm:p-10 rounded-3xl shadow-2xl w-full max-w-xl md:max-w-4xl animate-fade-in">
+    <h2 class="text-3xl sm:text-4xl font-extrabold text-center text-indigo-600 mb-8 sm:mb-10 tracking-wide">Реєстрація акаунту</h2>
+
+    <form action="{% url "user:registration" %}" method="POST">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="bg-red-50 border border-red-200 text-sm text-red-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+            <strong class="font-bold">Помилка реєстрації:</strong>
+            <ul class="mt-1 list-disc list-inside">
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            </ul>
         </div>
-    </section>
-{% endblock content %}
+      {% endif %}
+
+      <div class="flex flex-col md:flex-row md:space-x-6">
+
+        {# Ліва колонка #}
+        <div class="w-full md:w-1/2 space-y-5 mb-5 md:mb-0">
+          <div>
+            <label for="{{ form.username.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Логін</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <i class="fas fa-user text-gray-400"></i>
+              </div>
+              <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}"
+                     value="{{ form.username.value|default:'' }}" required
+                     class="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm {% if form.username.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                     placeholder="Введіть логін">
+            </div>
+            {% if form.username.errors %}
+                <ul class="text-xs text-red-600 mt-1">
+                    {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Ім'я</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <i class="fas fa-id-card text-gray-400"></i>
+              </div>
+              <input type="text" name="{{ form.first_name.name }}" id="{{ form.first_name.id_for_label }}"
+                     value="{{ form.first_name.value|default:'' }}" required
+                     class="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm {% if form.first_name.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                     placeholder="Введіть ім'я">
+            </div>
+            {% if form.first_name.errors %}
+                <ul class="text-xs text-red-600 mt-1">
+                    {% for error in form.first_name.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Прізвище</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <i class="fas fa-id-card text-gray-400"></i>
+              </div>
+              <input type="text" name="{{ form.last_name.name }}" id="{{ form.last_name.id_for_label }}"
+                     value="{{ form.last_name.value|default:'' }}" required
+                     class="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm {% if form.last_name.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                     placeholder="Введіть прізвище">
+            </div>
+            {% if form.last_name.errors %}
+                <ul class="text-xs text-red-600 mt-1">
+                    {% for error in form.last_name.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="block md:hidden border-t border-gray-200 my-5"></div>
+
+        {# Права колонка #}
+        <div class="w-full md:w-1/2 space-y-5 md:border-l md:border-gray-200 md:pl-6">
+          <div>
+            <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Електронна пошта</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <i class="fas fa-envelope text-gray-400"></i>
+              </div>
+              <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}"
+                     value="{{ form.email.value|default:'' }}" required
+                     class="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm {% if form.email.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                     placeholder="Введіть електронну пошту">
+            </div>
+            {% if form.email.errors %}
+                <ul class="text-xs text-red-600 mt-1">
+                    {% for error in form.email.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="{{ form.password1.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Пароль</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                  <i class="fas fa-lock text-gray-400"></i>
+              </div>
+              <input type="password" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}" required
+                     class="w-full pl-10 pr-12 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm {% if form.password1.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                     placeholder="Введіть пароль">
+              <button type="button" id="togglePassword" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-indigo-500 transition focus:outline-none">
+                <i class="fas fa-eye-slash"></i>
+              </button>
+            </div>
+            {% if form.password1.errors %}
+                <ul class="text-xs text-red-600 mt-1">
+                    {% for error in form.password1.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+            {% if form.password1.help_text %}
+              <p class="mt-1 text-xs text-gray-500">{{ form.password1.help_text|safe }}</p>
+            {% endif %}
+          </div>
+
+          <div>
+            <label for="{{ form.password2.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">Підтвердження пароля</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                  <i class="fas fa-lock text-gray-400"></i>
+              </div>
+              <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}" required
+                     class="w-full pl-10 pr-12 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm {% if form.password2.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                     placeholder="Підтвердіть пароль">
+              <button type="button" id="toggleConfirmPassword" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-indigo-500 transition focus:outline-none">
+                <i class="fas fa-eye-slash"></i>
+              </button>
+            </div>
+            {% if form.password2.errors %}
+                <ul class="text-xs text-red-600 mt-1">
+                    {% for error in form.password2.errors %}<li>{{ error }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 sm:mt-10">
+        <button type="submit"
+          class="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full transition transform hover:scale-105 duration-300 cursor-pointer text-base">
+          Зареєструватися
+        </button>
+      </div>
+
+    </form> 
+    <div class="mt-6 sm:mt-8 text-center text-sm text-gray-600">
+      <p>Вже маєте акаунт?
+        <a href="{% url 'user:login' %}" class="text-indigo-600 hover:text-indigo-800 hover:underline font-semibold transition">Увійти</a>
+      </p>
+    </div>
+
+  </div> 
+</section> 
+
+<style>
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fade-in 0.8s ease-out;
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const togglePasswordButton = document.getElementById('togglePassword');
+  const passwordInput = document.getElementById('{{ form.password1.id_for_label }}'); // Використовуємо ID поля з форми Django
+
+  if (togglePasswordButton && passwordInput) {
+    togglePasswordButton.addEventListener('click', function () {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      this.innerHTML = type === 'password' 
+        ? '<i class="fas fa-eye-slash"></i>' 
+        : '<i class="fas fa-eye"></i>';
+    });
+  }
+
+  const toggleConfirmPasswordButton = document.getElementById('toggleConfirmPassword');
+  const confirmPasswordInput = document.getElementById('{{ form.password2.id_for_label }}'); // Використовуємо ID поля з форми Django
+
+  if (toggleConfirmPasswordButton && confirmPasswordInput) {
+    toggleConfirmPasswordButton.addEventListener('click', function () {
+      const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      confirmPasswordInput.setAttribute('type', type);
+      this.innerHTML = type === 'password' 
+        ? '<i class="fas fa-eye-slash"></i>' 
+        : '<i class="fas fa-eye"></i>';
+    });
+  }
+});
+</script>
+{% endblock %}

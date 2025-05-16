@@ -1,0 +1,157 @@
+/* Product Modal Window Styles */
+
+#product-modal {
+    display: none;
+    position: fixed;
+    z-index: 200;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    align-items: center;
+    justify-content: center;
+}
+  
+.modal-content {
+    background-color: var(--white);
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    animation: modalAppear 0.5s ease;
+}
+  
+@keyframes modalAppear {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+  
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--eerie-black);
+    cursor: pointer;
+}
+  
+.modal-content h2 {
+    margin-bottom: 15px;
+    text-align: center;
+    color: var(--portland-orange);
+}
+  
+.modal-content h3 {
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.1em;
+    color: var(--eerie-black);
+}
+  
+.modal-content p {
+    text-align: left;
+    padding-left: 35px;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+/* Модальне вікно */
+.smodal {
+    display: none;
+    position: fixed;
+    z-index: 200;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    align-items: center;
+    justify-content: center;
+}
+
+/* Service Modal Window Styles */
+
+.smodal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.smodal-content {
+    background-color: var(--white);
+    margin: auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    animation: modalAppear 0.5s ease;
+}
+
+@keyframes modalAppear {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.smodal .sclose-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--eerie-black);
+    cursor: pointer;
+}
+
+.smodal .sclose-btn:hover {
+    color: var(--portland-orange);
+}
+
+.smodal-content h2 {
+    margin-bottom: 15px;
+    text-align: center;
+    color: var(--portland-orange);
+}
+
+.smodal-content form {
+    display: flex;
+    flex-direction: column;
+}
+
+.smodal-content form input, .smodal-content form select {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+}
+
+.smodal-content form button {
+    background-color: var(--portland-orange);
+    color: var(--white);
+    max-width: max-content;
+    padding: 8px 25px;
+    margin-top: 8px;
+    margin-inline: auto;
+    display: block;
+    font-weight: var(--fw-700);
+    border-radius: 50px;
+    transition: var(--transition-1);
+    cursor: pointer;
+}
+
+.smodal-content form button:hover {
+    color: var(--white);
+    background-color: var(--black);
+}

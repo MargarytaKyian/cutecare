@@ -5,13 +5,13 @@ from .models import User
 
 
 class UserLoginForm(AuthenticationForm):
-    username = forms.CharField()
-    password = forms.CharField()
+    def __init__(self, *args, **kwargs):
+        super(UserLoginForm, self).__init__(*args, **kwargs)
 
-
-    class Meta:
-        model = User
-        fields = ['username', 'password']
+        self.fields['username'].widget.attrs.update(
+            {'placeholder': 'Електронна пошта або логін'}
+         )
+        self.fields['username'].label = "Електронна пошта або логін"
 
 
 class UserRegistrationForm(UserCreationForm):

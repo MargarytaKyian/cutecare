@@ -1,84 +1,298 @@
 {% load static %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{% endblock title %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}CuteCare-PetShop by MargoKyian{% endblock %}</title>
+    <meta name="title" content="CuteCare-PetShop by MargoKyian">
+    <meta name="description" content="This is an eCommerce WebSite for PetShop by MargoKyian!">
 
-    {% comment %} boostrap {% endcomment %}
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
-    {% comment %} css {% endcomment %}
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    {% comment %} font-awesome {% endcomment %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <!-- Icon/Shortcut SVG format -->
+    <link rel="shortcut icon" href="{% static 'img/iconweb.svg' %}" type="image/svg+xml">
+
+    <!-- TailwindCSS CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <!-- Alpine JS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
+
+    <!-- AOS (animations) CDN -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}"/>
 
 </head>
-<body>
-    <header class="header sticky-top">
-        <div class="header-container d-flex">
-            <nav class="header-nav pt-3">
-                <ul class="header-list d-flex">
-                    <li><a href="/" class="nav-a m-3">Home</a></li>
-                    <li><a href="/shop" class="nav-a m-3">Shop</a></li>
-                    <li><a href="/assistant" class="nav-a m-3">Assistant</a></li>
-                </ul>
-            </nav>
-    
-            <div class="header-logo">
-                <a href="/"><img src="{% static 'img/petshopimg.jpg' %}" alt="" class="petshop-logo"></a>
-            </div>
+<body class="bg-gray-50 min-h-screen flex flex-col">
 
-            <form id="search-form" action="{% url 'main:product_search' %}" method="get" class="position-relative d-flex align-items-center mx-3">
-                <input type="text" id="search-input" name="q" class="form-control" placeholder="Пошук товарів…" autocomplete="off">
-            <button type="submit" class="btn btn-outline-secondary ml-2">🔍</button>
-            <div id="suggestions" class="list-group position-absolute w-100" style="top:100%; z-index:1000;">
-            </div>
-            </form>             
-    
-            <div class="header-profile pt-2">
-                <a href=""><img src="{% static 'img/bookmark-heart.svg' %}" width="30" height="30" class="heart-mark" alt=""></a>
-                <a href="{% url "cart:cart_detail" %}"><img src="{% static 'img/basket.svg' %}" width="27" height="28" class="basket" alt=""></a>
-                {% if user.is_authenticated %}
-            <a href="{% url 'users:profile' %}" class="m-2">
-                {% if user.image %}
-                    <img src="{{ user.image.url }}" alt="Profile" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover;">
-                {% else %}
-                    <img src="{% static 'img/person-circle.svg' %}" width="40" height="40" class="person-circle" alt="" style="opacity: 0.85;">
-                {% endif %}
-            </a>
-                {% else %}
-                    <a href="{% url 'users:login' %}" class="m-2">LOGIN</a>
-                {% endif %}
-                <p class="cart-quantity">
-                    {% with cart_quantity=cart|length %}
-                        {% if cart_quantity > 0 %}
-                            {{ cart_quantity }}
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+
+                <div class="flex-shrink-0">
+                    <a href="/" class="text-2xl font-bold text-indigo-600">CuteCare</a>
+                </div>
+
+                <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between sm:ml-6">
+                    <div class="flex items-center space-x-4 md:space-x-6">
+                        <a href="/" class="text-gray-700 hover:text-indigo-600 text-sm font-medium">Головна</a>
+                        <a href="/shop" class="text-gray-700 hover:text-indigo-600 text-sm font-medium">Каталог</a>
+                        <div class="relative flex items-center" x-data="{ open: false }">
+                            <button id="categories-button" @click="open = !open" class="text-gray-700 hover:text-indigo-600 text-sm font-medium flex items-center">
+                                <span>Категорії</span>
+                                <i class="fas fa-chevron-down ml-1 text-xs transition-transform duration-200 ease-in-out" :class="{ 'rotate-180': open }"></i>
+                            </button>
+                            <div id="categories-menu"
+                                 x-show="open"
+                                 @click.away="open = false"
+                                 x-transition:enter="transition ease-out duration-100"
+                                 x-transition:enter-start="transform opacity-0 scale-95"
+                                 x-transition:enter-end="transform opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="transform opacity-100 scale-100"
+                                 x-transition:leave-end="transform opacity-0 scale-95"
+                                 class="origin-top-right absolute left-0 mt-40 w-auto min-w-[12rem] rounded-md shadow-lg bg-white z-30 focus:outline-none"
+                                 style="display: none;" role="menu" aria-orientation="vertical" aria-labelledby="categories-button">
+                                <div class="py-1">
+                                    <a href="{% url 'main:product_list' %}"
+                                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white animate-on-scroll {% if not category %}bg-indigo-50 text-indigo-700{% endif %}"
+                                       role="menuitem">
+                                        Всі категорії
+                                    </a>
+                                    {% if categories %}
+                                        {% for c in categories %}
+                                        <a href="{{ c.get_absolute_url }}"
+                                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white animate-on-scroll {% if category.slug == c.slug %}bg-indigo-50 text-indigo-700{% endif %}"
+                                           role="menuitem">
+                                            {{ c.name }}
+                                        </a>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="block px-4 py-2 text-sm text-gray-500">Категорії не знайдено</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <a href="/services" class="text-gray-700 hover:text-indigo-600 text-sm font-medium">Послуги</a>
+                        <a href="/chatbot" class="text-gray-700 hover:text-indigo-600 text-sm font-medium">Ai-бот</a>
+                        <a href="/about" class="text-gray-700 hover:text-indigo-600 text-sm font-medium">Про нас</a>
+                    </div>
+
+                    <div class="w-auto md:w-1/2 lg:w-2/5 xl:w-1/3 ml-4">
+                        <form id="search-form" action="{% url 'main:product_search' %}" method="get" class="relative flex items-center">
+                            <input type="text" id="search-input" name="q" placeholder="Пошук товарів…" autocomplete="off" class="w-full py-2 pl-4 pr-10 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                            <button type="submit" class="absolute right-0 top-0 bottom-0 px-3 py-2 text-gray-500 hover:text-indigo-600 focus:outline-none" aria-label="Пошук">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <div id="suggestions" class="absolute w-full mt-1 top-full bg-white border border-gray-300 rounded-lg shadow-lg hidden z-20"></div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="flex items-center ml-auto space-x-2 sm:space-x-3">
+
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'favorite:favorite_list' %}"
+                        id="favorites-navbar-icon"
+                        class="inline-flex relative items-center justify-center p-2 rounded-full text-gray-700 hover:text-white hover:bg-rose-500 focus:outline-none cursor-pointer">
+                        <i class="fas fa-heart text-xl"></i>
+                        <span id="favorites-navbar-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white bg-indigo-500 rounded-full transform translate-x-1/2 -translate-y-1/2">
+                            {% with favourite_quantity=favorite|length %}{{ favourite_quantity|default:0 }}{% endwith %}
+                        </span>
+                    </a>
+                    {% endif %}
+
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'cart:cart_detail' %}"
+                       id="cart-navbar-icon"
+                       class="inline-flex relative items-center justify-center p-2 rounded-full text-gray-700 hover:text-white hover:bg-indigo-600 focus:outline-none cursor-pointer">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cart-navbar-count" class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white bg-indigo-500 rounded-full transform translate-x-1/2 -translate-y-1/2">
+                            {% with cart_quantity=cart|length %}{{ cart_quantity|default:0 }}{% endwith %}
+                        </span>
+                    </a>
+                    {% endif %}
+
+                    <div class="hidden sm:flex items-center">
+                    {% if user.is_authenticated %}
+                        <div class="relative" x-data="{ openDesktopProfile: false }">
+                            <button id="profile-button" @click="openDesktopProfile = !openDesktopProfile" class="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500 cursor-pointer" aria-expanded="false" :aria-expanded="openDesktopProfile.toString()">
+                                <span class="sr-only">Відкрити меню користувача</span>
+                                {% if user.image %}
+                                    <img class="h-8 w-8 rounded-full object-cover" src="{{ user.image.url }}" alt="User avatar">
+                                {% else %}
+                                    <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-indigo-500">
+                                        <i class="fas fa-user text-white text-sm"></i>
+                                    </span>
+                                {% endif %}
+                            </button>
+                            <div id="profile-menu"
+                              x-show="openDesktopProfile"
+                              @click.away="openDesktopProfile = false"
+                                 x-transition:enter="transition ease-out duration-100"
+                                 x-transition:enter-start="transform opacity-0 scale-95"
+                                 x-transition:enter-end="transform opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-75"
+                                 x-transition:leave-start="transform opacity-100 scale-100"
+                                 x-transition:leave-end="transform opacity-0 scale-95"
+                                 class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white z-30 focus:outline-none"
+                                 style="display: none;" role="menu" aria-orientation="vertical" aria-labelledby="profile-button">
+                                <div class="py-1" role="none"> <a href="{% url 'users:profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white animate-on-scroll bg-indigo-50 text-indigo-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Профіль</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white animate-on-scroll" role="menuitem" tabindex="-1" id="user-menu-item-1">Замовлення</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white animate-on-scroll" role="menuitem" tabindex="-1" id="user-menu-item-2">Налаштування</a>
+                                    <form method="post" action="{% url 'users:logout' %}" role="none"> {% csrf_token %}
+                                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white animate-on-scroll" role="menuitem" tabindex="-1" id="user-menu-item-3">Вийти</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                         {% else %}
-                            0
+                        <div class="flex items-center space-x-2">
+                            <a href="{% url 'users:login' %}" class="text-sm font-medium text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md hover:bg-gray-100">Увійти</a>
+                            <a href="{% url 'users:registration' %}" class="text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-2 rounded-md">Реєстрація</a>
+                        </div>
                         {% endif %}
-                    {% endwith %}
-                </p>
+                    </div>
+                    <div class="flex sm:hidden">
+                        <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-white hover:bg-indigo-600 focus:outline-none cursor-pointer">
+                            <span class="sr-only">Відкрити головне меню</span>
+                            <svg class="h-6 w-6 block" stroke="currentColor" fill="none" viewBox="0 0 24 24" id="open-icon">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                            <svg class="h-6 w-6 hidden" stroke="currentColor" fill="none" viewBox="0 0 24 24" id="close-icon">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </header>    
 
-    <div class="container">
+        <div id="mobile-menu" class="sm:hidden hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <div class="mt-3 px-3">
+                    <input type="text" id="mobile-search-input" placeholder="Пошук..." class="w-full py-2 pl-4 pr-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" autocomplete="off">
+                    <div id="mobile-suggestions" class="absolute w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg hidden z-10"></div>
+                </div>
+                <a href="/" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-600 hover:text-white">Головна</a>
+                <a href="/shop" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-600 hover:text-white">Каталог</a>
+                <div class="relative" x-data="{ open: false }">
+                <button
+                    id="mobile-categories-button"
+                    @click="open = !open"
+                    class="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-600 hover:text-white flex justify-between items-center focus:outline-none"
+                >
+                    <span>Категорії</span>
+                    <i
+                        class="fas ml-2 text-xs transition-transform duration-200 ease-in-out"
+                        :class="{ 'fa-chevron-up': open, 'fa-chevron-down': !open }"
+                    ></i>
+                </button>
+                <div
+                    id="mobile-categories-menu"
+                    x-show="open"
+                    x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="transform opacity-0 scale-95"
+                    x-transition:enter-end="transform opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="transform opacity-100 scale-100"
+                    x-transition:leave-end="transform opacity-0 scale-95"
+                    class="mt-1 space-y-1 px-3 relative z-20 bg-gray-50 py-2"
+                    style="display: none;" >
+                    <a href="{% url 'main:product_list' %}"
+                       class="block px-3 py-2 rounded-md text-sm {% if not category %}text-indigo-700 bg-indigo-100 font-semibold{% else %}text-gray-700 hover:bg-indigo-100 hover:text-indigo-700 font-medium{% endif %}"
+                       role="menuitem">
+                        Всі категорії
+                    </a>
+                    {% if categories %}
+                        {% for c in categories %}
+                        <a href="{{ c.get_absolute_url }}"
+                           class="block px-3 py-2 rounded-md text-sm {% if category.slug == c.slug %}text-indigo-700 bg-indigo-100 font-semibold{% else %}text-gray-700 hover:bg-indigo-100 hover:text-indigo-700 font-medium{% endif %}"
+                           role="menuitem">
+                            {{ c.name }}
+                        </a>
+                        {% endfor %}
+                    {% else %}
+                        <span class="block px-3 py-2 text-sm text-gray-500">Категорії не знайдено</span>
+                    {% endif %}
+                </div>
+            </div>
+                <a href="/services" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-600 hover:text-white">Послуги</a>
+                <a href="/chatbot" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-600 hover:text-white">Ai-бот</a>
+                <a href="/about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-600 hover:text-white">Про нас</a>
+            </div>
+            {% if user.is_authenticated %}
+            <div x-data="{ open: false }" class="border-t border-gray-200">
+                <button @click="open = !open" class="flex items-center justify-between w-full px-4 py-3 text-left focus:outline-none hover:bg-gray-100">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            {% if user.image %}
+                                <img class="h-10 w-10 rounded-full object-cover" src="{{ user.image.url }}" alt="User avatar">
+                            {% else %}
+                                <span class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500">
+                                    <i class="fas fa-user text-white"></i>
+                                </span>
+                            {% endif %}
+                        </div>
+                        <div class="ml-3">
+                            <div class="text-base font-medium text-gray-800">{{ user.get_full_name|default:user.username }}</div>
+                            <div class="text-sm font-medium text-gray-500">{{ user.email }}</div>
+                        </div>
+                    </div>
+                    <i class="fas text-gray-400 ml-2 transition-transform duration-200 ease-in-out" :class="{ 'fa-chevron-up': open, 'fa-chevron-down': !open }"></i>
+                </button>
+                <div x-show="open"
+                     x-transition:enter="transition ease-out duration-100"
+                     x-transition:enter-start="transform opacity-0 scale-95"
+                     x-transition:enter-end="transform opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="transform opacity-100 scale-100"
+                     x-transition:leave-end="transform opacity-0 scale-95"
+                     class="pb-3 px-2 space-y-1 bg-gray-50"
+                     style="display: none;"
+                >
+                    <a href="{% url 'users:profile' %}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-100 hover:text-indigo-700">Профіль</a>
+                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-100 hover:text-indigo-700">Замовлення</a>
+                    <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-100 hover:text-indigo-700">Налаштування</a>
+                    <form method="post" action="{% url 'users:logout' %}"> {% csrf_token %}
+                        <button type="submit" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-indigo-100 hover:text-indigo-700">Вийти</button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="py-3 px-2 border-t border-gray-200">
+                <a href="{% url 'users:login' %}" class="block w-full text-center px-3 py-2 mb-2 rounded-md text-base font-medium text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 border border-indigo-600">Увійти</a>
+                <a href="{% url 'users:registration' %}" class="block w-full text-center px-3 py-2 rounded-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700">Реєстрація</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="w-full flex-grow">
         {% block content %}
-        {% endblock content %}
-    </div>
+        {% endblock %}
+    </main>
 
+    <footer class="bg-black shadow-md">
+        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
+            &copy; {% now "Y" %} CuteCare-PetShop. Усі права захищені.
+        </div>
+    </footer>
 
-
-
-    {% comment %} js bootstrap {% endcomment %}
-    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-    {% comment %} js autosearch {% endcomment %}
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+    </script>
     <script>const AUTOCOMPLETE_URL = "{% url 'main:autocomplete' %}";</script>
-    {% comment %} search js {% endcomment %}
-    <script src="{% static 'js/search.js' %}"></script>
-    {% comment %} script js {% endcomment %}
     <script src="{% static 'js/script.js' %}"></script>
-
+    <script src="{% static 'js/search.js' %}"></script>
 </body>
 </html>

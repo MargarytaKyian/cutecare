@@ -1,35 +1,200 @@
 {% extends "main/base.html" %}
 {% load static %}
 
-{% block title %}Login{% endblock title %}
+{% block title %}Авторизація | CuteCare{% endblock %}
 
 {% block content %}
-    <section class="login d-flex">
-        <div class="login-title">
-            <h2>Login</h2>
-            <form action="{% url "user:login" %}" method="post">
-                {% csrf_token %}
-                {% if request.GET.next %}
-                    <input type="hidden" name="next" value="{{ request.GET.next }}">
-                {% endif %}
-                <div class="mb-3">
-                    <label for="id_username" class="form-label form-style">Username</label>
-                    <input type="text" class="form-control form-style" value="{% if form.username.value %}{{ form.username.value }}{% endif %}"
-                    name="username" id="id_username" placeholder="Input username" required>
-                </div>
-                <div class="mb-3">
-                    <label for="id_password" class="form-label form-style">Password</label>
-                    <input type="password" class="form-control form-style"
-                    name="password" id="id_password" placeholder="Your password" required>
-                </div>
-                <button type="submit" class="login-btn form-style">Login</button>
-            </form>
-            <div class="reset-pass">
-                <hr>
-                <div class="mt-3">
-                    <a href="#">Reset Password</a> | <a href="{% url "user:registration" %}">Create Account</a>
+
+<section class="py-0 pb-10 bg-gradient-to-br from-indigo-100 via-white to-indigo-200 min-h-screen flex items-center justify-center" id="login-now">
+    <div class="bg-white p-10 rounded-3xl shadow-2xl w-full max-w-md animate-fade-in">
+        <h2 class="text-4xl font-extrabold text-center text-indigo-600 mb-6 tracking-wide">Вхід до акаунту</h2>
+
+        {% if form.non_field_errors %}
+            <div class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form action="{% url "user:login" %}" method="POST" class="space-y-6">
+            {% csrf_token %}
+            {% if request.GET.next %}
+                <input type="hidden" name="next" value="{{ request.GET.next }}">
+            {% endif %}
+
+            <div class="mb-6 flex items-center justify-center text-sm">
+                <span class="text-gray-400 font-medium mr-2">Логін</span>
+                <label for="toggleLoginMethod" class="inline-flex relative items-center cursor-pointer mx-1">
+                    <input type="checkbox" id="toggleLoginMethod" class="sr-only peer">
+                    <div class="w-10 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-300 rounded-full peer dark:bg-gray-300 peer-checked:bg-indigo-600 transition-all"></div>
+                    <div class="absolute left-0.5 top-0.5 bg-white w-4 h-4 rounded-full transition-all peer-checked:translate-x-5"></div>
+                </label>
+                <span class="text-gray-400 font-medium ml-2">Електронна пошта</span>
+            </div>
+
+            <div id="loginField" class="mb-6"> <label for="login" class="block text-sm font-semibold text-gray-700 mb-2">Логін</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                        <i class="fas fa-user text-gray-400"></i>
+                    </div>
+                    <input type="text" id="login" name="username"
+                           class="w-full pl-10 pr-4 py-2.5 border {% if form.username.errors and not '@' in form.username.value|default:'' %}border-red-500{% else %}border-gray-300{% endif %} rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm"
+                           placeholder="Введіть логін">
+                    {% if form.username.errors and not '@' in form.username.value|default:'' %}
+                        <p class="text-red-500 text-xs italic mt-1">{{ form.username.errors.as_text }}</p>
+                    {% endif %}
                 </div>
             </div>
+
+            <div id="emailField" class="mb-6 hidden"> <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Електронна пошта</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                        <i class="fas fa-envelope text-gray-400"></i>
+                    </div>
+                    <input type="email" id="email" name="username"
+                           class="w-full pl-10 pr-4 py-2.5 border {% if form.username.errors and '@' in form.username.value|default:'' %}border-red-500{% else %}border-gray-300{% endif %} rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm"
+                           placeholder="Введіть електронну пошту">
+                     {% if form.username.errors and '@' in form.username.value|default:'' %}
+                        <p class="text-red-500 text-xs italic mt-1">{{ form.username.errors.as_text }}</p>
+                     {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label for="id_password" class="block text-sm font-semibold text-gray-700 mb-2">Пароль</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                        <i class="fas fa-lock text-gray-400"></i>
+                    </div>
+                    <input type="password" id="id_password" name="password" required
+                           class="w-full pl-10 pr-12 py-2.5 border {% if form.password.errors %}border-red-500{% else %}border-gray-300{% endif %} rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm"
+                           placeholder="Введіть пароль">
+                    <button type="button" id="togglePassword" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-indigo-500 transition">
+                        <i class="fas fa-eye-slash"></i>
+                    </button>
+                </div>
+                 {% if form.password.errors %}
+                    <p class="text-red-500 text-xs italic mt-1">{{ form.password.errors.as_text }}</p>
+                 {% endif %}
+            </div>
+
+            <div class="pt-4">
+                <button type="submit"
+                        class="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full transition transform hover:scale-105 duration-300 cursor-pointer">
+                    Увійти
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-8 text-center text-sm text-gray-600 space-y-3">
+            <p>Немає акаунту?
+                <a href="{% url "user:registration" %}" class="text-indigo-600 hover:text-indigo-800 hover:underline font-semibold transition">Зареєструватися</a>
+            </p>
+            <p>
+                <a href="#" class="text-indigo-600 hover:text-indigo-800 hover:underline font-semibold transition">Забули пароль?</a>
+            </p>
         </div>
-    </section>
+    </div>
+</section>
+
+<style>
+    @keyframes fade-in {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+        animation: fade-in 0.8s ease-out;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordField = document.getElementById('id_password');
+
+    if (togglePassword && passwordField) {
+        togglePassword.addEventListener('click', function () {
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordField.setAttribute('type', type);
+            this.innerHTML = type === 'password' ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+        });
+    }
+
+    const toggleLoginMethod = document.getElementById('toggleLoginMethod');
+    const emailFieldDiv = document.getElementById('emailField');
+    const loginFieldDiv = document.getElementById('loginField');
+    
+    const emailInputElement = document.getElementById('email');
+    const loginInputElement = document.getElementById('login');
+
+    if (toggleLoginMethod && emailFieldDiv && loginFieldDiv && emailInputElement && loginInputElement) {
+        
+        const initialSubmittedValue = ("{{ form.username.value|default:''|escapejs }}").trim();
+
+        // 'displayLogin' = true означає показати поле "Логін"
+        // 'displayLogin' = false означає показати поле "Email"
+        function updateLoginFieldsUI(displayLogin) { 
+            if (displayLogin) { // Показати "Логін"
+                loginFieldDiv.classList.remove('hidden');
+                loginInputElement.required = true;
+                loginInputElement.disabled = false;
+
+                emailFieldDiv.classList.add('hidden');
+                emailInputElement.required = false;
+                emailInputElement.disabled = true;
+            } else { // Показати "Email"
+                emailFieldDiv.classList.remove('hidden');
+                emailInputElement.required = true;
+                emailInputElement.disabled = false;
+
+                loginFieldDiv.classList.add('hidden');
+                loginInputElement.required = false;
+                loginInputElement.disabled = true;
+            }
+        }
+        
+        // Визначаємо початковий стан: Логін за замовчуванням
+        let initiallyDisplayLogin = true; 
+
+        if (initialSubmittedValue) {
+            if (initialSubmittedValue.includes('@')) {
+                emailInputElement.value = initialSubmittedValue;
+                loginInputElement.value = ''; 
+                initiallyDisplayLogin = false; // Був введений email, тому показуємо email
+            } else { 
+                loginInputElement.value = initialSubmittedValue;
+                emailInputElement.value = ''; 
+                initiallyDisplayLogin = true; // Був введений логін, тому показуємо логін
+            }
+        } else {
+            emailInputElement.value = '';
+            loginInputElement.value = '';
+            // initiallyDisplayLogin залишається true (показувати Логін за замовчуванням)
+        }
+
+        // Встановлюємо стан перемикача:
+        // Якщо initiallyDisplayLogin = true (показуємо Логін), перемикач НЕ вибраний (checked = false).
+        // Якщо initiallyDisplayLogin = false (показуємо Email), перемикач вибраний (checked = true).
+        toggleLoginMethod.checked = !initiallyDisplayLogin; 
+        
+        updateLoginFieldsUI(initiallyDisplayLogin);
+
+        toggleLoginMethod.addEventListener('change', function() {
+            // this.checked = true означає, що користувач перемкнув на праву мітку (Електронна пошта).
+            // this.checked = false означає, що користувач перемкнув на ліву мітку (Логін).
+            const displayLoginNow = !this.checked; 
+            updateLoginFieldsUI(displayLoginNow);
+
+            if (displayLoginNow) { // Активували "Логін", очищуємо поле email
+                emailInputElement.value = '';
+            } else { // Активували "Електронна пошта", очищуємо поле логіна
+                loginInputElement.value = '';
+            }
+        });
+    }
+});
+</script>
+
 {% endblock content %}

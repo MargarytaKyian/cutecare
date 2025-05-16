@@ -6,7 +6,7 @@
 {% block content %}
     <div class="forcreate">
         <div class="profile bg-white p-4 mb-4 mx-2">
-            <h2 class="mb-2">Create Order</h2>
+            <h2 class="mb-2">Створити замовлення</h2>
             <form action="" method="post" class="order-form">
                 {% csrf_token %}
                 <div class="col-md-12 mb-3">
@@ -39,12 +39,12 @@
                     <input type="text" class="form-control form-styleprofile" id="id_city"
                     name="city" placeholder="Your City" value="{{ form.city.value|default:'' }}" required>
                 </div>
-                <p><input type="submit" value="Place Order"></p>
+                <p><input type="submit" value="Розмістити Замовлення"></p>
                 {% csrf_token %}
             </form>
         </div>
         <div class="checkout">
-            <h1>Checkout</h1>
+            <h1>До сплати</h1>
             <div class="order-info">
                 {% for item in cart %}
                     <li>
@@ -52,7 +52,7 @@
                         <p>₴{{ item.total_price }}</p>
                     </li>
                 {% endfor %}
-                <p>Total: ₴{{ cart.get_total_price }}</p>
+                <p>Загальна сума: ₴{{ cart.get_total_price }}</p>
             </div>
         </div>
     </div>

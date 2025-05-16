@@ -37,11 +37,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django_tailwind_cli",
+    'tailwind',
+    'theme',
     'main',
     'cart',
     'users',
     'orders',
     'payment',
+    'favorite',
 ]
 
 MIDDLEWARE = [
@@ -66,7 +70,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'cart.context_processors.cart'
+                'main.context_processors.common_data',
+                'cart.context_processors.cart',
+                'favorite.context_processors.favorite', 
             ],
         },
     },
@@ -108,6 +114,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'users.backends.EmailOrUsernameModelBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -137,6 +147,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 CART_SESSION_ID = 'cart'
 
 AUTH_USER_MODEL = 'users.User'
+
+TAILWIND_APP_NAME = 'theme'
 
 STRIPE_PUBLISHABLE_KEY = 'pk_test_51REjb1Em2e1v2t6J8aOJOtD1cFkVpevzWZZ17VuLFWYZoUBEEKdp6ikLA2PLbtjGPPvU4OwxkpB5IJJYeQJL6ObP00zYrXAZnr'
 STRIPE_SECRET_KEY = 'sk_test_51REjb1Em2e1v2t6J7fTUA5Hmj6h6p9veMmrGs1DeiTLmcBcW9Odomh6bWp1AUFd5OqJDVgCKnnbz1ee5649PJZ8h00qhG0RbZs'

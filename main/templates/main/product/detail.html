@@ -1,146 +1,398 @@
-{% extends "main/base.html" %}
+{% extends 'main/base.html' %}
 {% load static %}
 
-{% block title %}
-    {{ product.name }}
-{% endblock title %}
+{% block title %}{{ product.name }} | CuteCare{% endblock %}
 
 {% block content %}
-    <div class="detail-product d-flex">
-        <div class="detail-img">
+<section class="py-10 sm:py-12 bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
+  <div class="max-w-4xl lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden lg:flex" data-aos="fade-up">
+      <div class="lg:w-1/2 relative" x-data="{
+          images: [
             {% for image in product.images.all %}
-                <img class="detail-image" src="{{ image.image.url }}" alt="" style="display: none;" data-index="{{ forloop.counter0 }}">
+              '{{ image.image.url }}'{% if not forloop.last %},{% endif %}
+            {% empty %}
+              '{% static 'img/product_placeholder.jpg' %}' // Default placeholder if no images
             {% endfor %}
-            <div class="image-nav">
-                <button class="prev-btn">&lsaquo;</button>
-                <button class="next-btn">&rsaquo;</button>
+          ],
+          thumbnails: [
+            {% for image in product.images.all %}
+              // Assuming image.thumbnail.url or using main image if no specific thumbnail
+              '{{ image.thumbnail.url|default:image.image.url }}'{% if not forloop.last %},{% endif %}
+            {% empty %}
+              '{% static 'img/product_placeholder_thumb.jpg' %}' // Default placeholder
+            {% endfor %}
+          ],
+          currentImage: 0,
+          nextImage() { this.currentImage = (this.currentImage + 1) % this.images.length; },
+          prevImage() { this.currentImage = (this.currentImage - 1 + this.images.length) % this.images.length; },
+          setImage(index) { this.currentImage = index; }
+      }">
+        <div class="relative h-[28rem] sm:h-[30rem] md:h-[34rem] bg-gray-100">
+          <template x-for="(image, index) in images" :key="index">
+            <div x-show="currentImage === index"
+                 class="absolute inset-0 flex items-center justify-center transition-opacity duration-500 ease-in-out"
+                 x-transition:enter="opacity-0"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="opacity-100"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0">
+              <img :src="image" alt="Зображення продукту: {{ product.name }}" class="w-full h-full object-cover">
+            </div>
+          </template>
+
+          {% if product.images.all|length > 1 %}
+          <button @click="prevImage()"
+                  class="absolute top-1/2 left-2.5 transform -translate-y-1/2 bg-white/75 hover:bg-white text-indigo-600 p-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  aria-label="Попереднє зображення">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button @click="nextImage()"
+                  class="absolute top-1/2 right-2.5 transform -translate-y-1/2 bg-white/75 hover:bg-white text-indigo-600 p-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  aria-label="Наступне зображення">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+
+          <div class="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-1.5">
+            <template x-for="(image, index) in images" :key="index">
+              <button @click="currentImage = index"
+                      :class="{'bg-indigo-600 scale-110': currentImage === index, 'bg-gray-400 hover:bg-gray-500': currentImage !== index}"
+                      class="w-2.5 h-2.5 rounded-full transition-all duration-300 focus:outline-none"></button>
+            </template>
+          </div>
+          {% endif %}
+        </div>
+        {% if product.images.all|length > 1 %}
+        <div class="p-3 bg-gray-50">
+            <div class="grid grid-cols-4 gap-1.5 sm:gap-2">
+                <template x-for="(thumb, index) in thumbnails" :key="index">
+                    <button @click="setImage(index)"
+                            class="rounded-md overflow-hidden border-2 transition-all duration-200"
+                            :class="currentImage === index ? 'border-indigo-500 ring-1 ring-indigo-300' : 'border-transparent hover:border-indigo-300'">
+                        <img :src="thumb" alt="Мініатюра продукту" class="w-full h-14 sm:h-16 object-cover">
+                    </button>
+                </template>
             </div>
         </div>
-        <script>
-            const images = document.querySelectorAll('.detail-image');
-            const prevBtn = document.querySelector('.prev-btn');
-            const nextBtn = document.querySelector('.next-btn');
-            let currentIndex = 0;
+        {% endif %}
+      </div>
 
-            images[currentIndex].style.display = 'block';
-            images.forEach((image, index) => {
-                if (index !== currentIndex) {
-                    image.style.display = 'none';
-                }
-            });
+      <div class="lg:w-1/2 p-5 sm:p-6 lg:p-8 flex flex-col">
+        <p class="text-xs font-medium text-indigo-500 mb-0.5" data-aos="fade-left" data-aos-delay="100">{{ product.category.name|default:"Категорія" }}</p>
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2" data-aos="fade-left" data-aos-delay="200">{{ product.name }}</h1>
         
-            if (images.length === 1) {
-                prevBtn.style.display = 'none';
-                nextBtn.style.display = 'none';
-            } else {
-                prevBtn.addEventListener('click', () => {
-                    images[currentIndex].style.display = 'none';
-                    currentIndex = (currentIndex - 1 + images.length) % images.length;
-                    images[currentIndex].style.display = 'block';
-                });
-        
-                nextBtn.addEventListener('click', () => {
-                    images[currentIndex].style.display = 'none';
-                    currentIndex = (currentIndex + 1) % images.length;
-                    images[currentIndex].style.display = 'block';
-                });
-            }
-        </script>        
-
-        <div class="detail-description">
-            <h2>{{ product.name }}</h2>
-            <h3>Category: {{ product.category }}</h3>
-            <p>Description: {{ product.description|linebreaks }}</p>
-            {% if product.discount %}
-                <div class="cart-discount d-flex gap-2">
-                    <p class="line">₴{{ product.price|floatformat:2 }}</p>
-                    <p>₴{{ product.sell_price|floatformat:2 }}</p>
-                </div>
-            {% else %}
-                <p class="price">₴{{ product.price|floatformat:2 }}</p>
-            {% endif %}
-            <form action="{% url "cart:cart_add" product.id %}" class="qform" method="post">
-                <div class="cart-form">
-                    {{ cart_product_form }}
-                    {% csrf_token %}
-                </div>
-                <input type="submit" class="add-to-cart-btn" value="Add to cart">
-            </form>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-9">
-            <form action="{% url 'main:submit_review' product.id %}" method="POST">
-                {% csrf_token %}
-                <h5>Write Your Review</h5>
-                <label for="rating">How do you rate this product?</label>
-                <div class="rate">
-                  <input type="radio" name="rating" id="star5" value="5" required />
-                  <label for="star5" title="5 stars"></label>
-                  <input type="radio" name="rating" id="star4" value="4" />
-                  <label for="star4" title="4 stars"></label>
-                  <input type="radio" name="rating" id="star3" value="3" />
-                  <label for="star3" title="3 stars"></label>
-                  <input type="radio" name="rating" id="star2" value="2" />
-                  <label for="star2" title="2 stars"></label>
-                  <input type="radio" name="rating" id="star1" value="1" />
-                  <label for="star1" title="1 star"></label>
-                </div>
-                <div class="mt-3">
-                  <label>Review Title:</label>
-                  <input type="text" class="form-control mb-2" name="subject">
-                  <label>Review:</label>
-                  <textarea name="review" rows="4" class="form-control mb-2"></textarea>
-                </div>
-                {% if user.is_authenticated %}
-                  <button type="submit" class="btn btn-primary mt-2">Submit Review</button>
+        <div class="flex items-center mb-3" data-aos="fade-left" data-aos-delay="300">
+    <div class="flex text-yellow-400 text-sm">
+        {% if product.star_list %}
+            {% for star_type in product.star_list %}
+                {% if star_type == 'full' %}
+                    <i class="fas fa-star"></i>
+                {% elif star_type == 'half' %}
+                    <i class="fas fa-star-half-alt"></i> 
                 {% else %}
-                  <p class="text-muted mt-2">
-                    You must be logged in to post a review.
-                    <a href="{% url 'users:login' %}">Login Now</a>
-                  </p>
+                    <i class="far fa-star text-gray-300"></i>
                 {% endif %}
-              </form>              
+            {% endfor %}
+        {% else %}
+            {% for i in "12345" %} <i class="far fa-star text-gray-300"></i> {% endfor %}
+        {% endif %}
+    </div>
+    
+    {% if product.star_list %}
+        <span class="ml-1.5 text-xs text-gray-500 hover:text-indigo-500 transition cursor-pointer" 
+              @click.prevent="document.getElementById('reviews-tab').click(); setTimeout(() => { document.getElementById('reviews-tab-content').scrollIntoView({ behavior: 'smooth' }); }, 100)">
+            ({{ product.avg_rating|floatformat:1 }} з 5 | {{ reviews|length|default:0 }} відгуків)
+        </span>
+    {% else %}
+        <a href="#reviews-tab-content" 
+           @click.prevent="document.getElementById('reviews-tab').click(); setTimeout(() => { document.getElementById('reviews-tab-content').scrollIntoView({ behavior: 'smooth' }); }, 100)" 
+           class="ml-1.5 text-xs text-gray-500 hover:text-indigo-500 transition">
+           (ще немає відгуків)
+        </a>
+    {% endif %}
+    </div>
 
-            <header class="section-heading mt-5">
-            <h3>Customer Reviews</h3>
-            </header>
-            <div class="customer-reviews">
-            {% if reviews %}
-                {% for review in reviews %}
-                <div class="review mb-4 p-3 border rounded">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div class="d-flex align-items-center">
-                            {% if review.user.image %}
-                                <img src="{{ review.user.image.url }}" alt="Avatar"
-                                     class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                            {% else %}
-                                <img src="{% static 'img/person-circle.svg' %}" alt="Avatar"
-                                     class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover; opacity: 0.85;">
-                            {% endif %}
-                            <strong>{{ review.user.username }}</strong>
-                        </div>
-                        <small class="text-muted">{{ review.created_at|date:"d M Y" }}</small>
-                    </div>                    
-                    <div class="review-stars mb-2">
-                        {% for star in review.star_list %}
-                            {% if star == 'full' %}
-                                <i class="fas fa-star"></i>
-                            {% else %}
-                                <i class="far fa-star"></i>
-                            {% endif %}
-                        {% endfor %}
-                    </div>                    
-                    {% if review.subject %}
-                    <h5 class="mb-1">{{ review.subject }}</h5>
-                    {% endif %}
-                    <p class="mb-0">{{ review.review }}</p>
-                </div>
-                {% endfor %}
+        <p class="text-sm text-gray-600 mb-4 leading-relaxed" data-aos="fade-left" data-aos-delay="400">
+          {{ product.description|linebreaks|default:"Детальний опис товару з'явиться тут незабаром." }}
+        </p>
+
+        <div class="mb-4" data-aos="fade-left" data-aos-delay="500">
+          {% if product.discount %}
+            <span class="text-gray-500 text-lg line-through mr-1.5">{{ product.price|floatformat:2 }}₴</span>
+            <span class="text-indigo-600 text-3xl font-bold">{{ product.sell_price|floatformat:2 }}₴</span>
+            {% if product.price and product.sell_price %}
+            <span class="ml-1.5 text-xs font-medium text-green-600 bg-green-100 px-1.5 py-0.5 rounded">
+                Знижка {{ product.discount|floatformat:0 }}%
+            </span>
+            {% endif %}
+          {% else %}
+            <span class="text-indigo-600 text-3xl font-bold">{{ product.price|floatformat:2 }}₴</span>
+          {% endif %}
+        </div>
+        
+        <form action="{% url 'cart:cart_add' product.id %}" method="post" class="mb-4" data-aos="fade-left" data-aos-delay="550">
+            {% csrf_token %}
+            {% if cart_product_form.update %}
+                {{ cart_product_form.update }}
+            {% endif %}
+            {% for field in cart_product_form %}{% if field.is_hidden and field.name != 'quantity' %}{{ field }}{% endif %}{% endfor %}
+
+
+            <div x-data="{ quantity: {{ cart_product_form.quantity.value|default:1 }} }">
+              <label for="quantity-input-{{product.id}}" class="block text-xs font-medium text-gray-700 mb-1">Кількість:</label>
+              <div class="flex items-center border border-gray-300 rounded-md overflow-hidden max-w-[100px]">
+                  <button type="button" @click="quantity = Math.max(1, quantity - 1)" class="px-2.5 py-1.5 text-gray-600 hover:bg-gray-100 transition focus:outline-none">
+                      <i class="fas fa-minus text-xs"></i>
+                  </button>
+                  <input type="text" x-model.number="quantity" id="quantity-input-{{product.id}}" name="quantity" class="w-10 text-center border-l border-r border-gray-300 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500" readonly>
+                  <button type="button" @click="quantity++" class="px-2.5 py-1.5 text-gray-600 hover:bg-gray-100 transition focus:outline-none">
+                      <i class="fas fa-plus text-xs"></i>
+                  </button>
+              </div>
+            </div>
+
+            <form action="{% url 'cart:cart_add' product.id %}" method="post" class="mb-4" data-aos="fade-left" data-aos-delay="550">
+            {% csrf_token %}
+            {% if cart_product_form.update %}
+                {{ cart_product_form.update }}
+            {% endif %}
+            {% for field in cart_product_form %}{% if field.is_hidden and field.name != 'quantity' %}{{ field }}{% endif %}{% endfor %}
+
+            <div class="mt-auto space-y-3 sm:space-y-0 sm:flex sm:space-x-3 pt-4">
+              <button type="submit" class="w-full sm:w-auto flex-1 items-center justify-center px-6 py-2.5 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-full shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 transform hover:scale-105">
+                <i class="fas fa-shopping-cart mr-1.5"></i> Додати в кошик
+              </button>
+        </form> 
+        {% if user.is_authenticated %}
+            {% if is_favorited %}
+                <form action="{% url 'favorite:remove_from_favorite' product.id %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full sm:w-auto flex items-center justify-center px-5 py-2.5 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-full hover:bg-red-100 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-300 transform hover:scale-105 cursor-pointer">
+                        <i class="fas fa-heart-broken mr-1.5"></i> Прибрати з бажань
+                    </button>
+                </form>
             {% else %}
-                <p class="text-muted">No reviews yet. Be the first to review this product!</p>
+                <form action="{% url 'favorite:add_to_favorite' product.id %}" method="post" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full sm:w-auto flex items-center justify-center px-5 py-2.5 text-sm font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-full hover:bg-indigo-100 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 transform hover:scale-105 cursor-pointer">
+                        <i class="fas fa-heart mr-1.5"></i> У список бажань
+                    </button>
+                </form>
+            {% endif %}
+            {% else %}
+                <a href="{% url 'users:login' %}?next={{ request.path }}" class="w-full sm:w-auto flex items-center justify-center px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 border border-gray-200 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-300 transform hover:scale-105">
+                    <i class="fas fa-sign-in-alt mr-1.5"></i> Увійдіть, щоб зберегти
+                </a>
             {% endif %}
             </div>
-        </div>
+      </div>
     </div>
+
+    <div class="mt-10 lg:mt-12" x-data="{ activeTab: 'description' }" data-aos="fade-up" data-aos-delay="200">
+      <div class="border-b border-gray-200">
+          <nav class="-mb-px flex space-x-3 sm:space-x-6" aria-label="Tabs">
+              <button @click="activeTab = 'description'"
+                      :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'description', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'description' }"
+                      class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 focus:outline-none">
+                  Опис
+              </button>
+              <button @click="activeTab = 'details'"
+                      :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'details', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'details' }"
+                      class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 focus:outline-none">
+                  Характеристики
+              </button>
+              <button @click="activeTab = 'reviews'; setTimeout(() => { document.getElementById('reviews-tab-content').scrollIntoView({ behavior: 'smooth' }); }, 50)" id="reviews-tab"
+                      :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'reviews', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'reviews' }"
+                      class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 focus:outline-none">
+                  Відгуки <span class="ml-0.5 bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full text-2xs">{{ reviews|length|default:0 }}</span>
+              </button>
+          </nav>
+      </div>
+
+      <div class="py-6">
+          <div x-show="activeTab === 'description'" class="prose prose-sm sm:prose prose-indigo max-w-none text-gray-600">
+              <p>{{ product.full_description|linebreaks|default:product.description|linebreaks|default:"Повний опис товару буде доступний найближчим часом." }}</p>
+              {% if product.key_features %}
+              <p>Основні переваги:</p>
+              <ul>
+                  {% for feature in product.key_features %}
+                  <li><strong>{{ feature.name }}:</strong> {{ feature.value }}</li>
+                  {% endfor %}
+              </ul>
+              {% endif %}
+          </div>
+
+          <div x-show="activeTab === 'details'" class="text-sm text-gray-600">
+              <h3 class="text-lg font-semibold text-gray-800 mb-3">Детальні характеристики:</h3>
+              <ul class="space-y-1.5">
+                  <li><strong>Тип корму:</strong> {{ product.type|default:"Не вказано" }}</li>
+                  <li><strong>Клас:</strong> {{ product.product_class|default:"Не вказано" }}</li>
+                  <li><strong>Призначення:</strong> {{ product.target_animal|default:"Для домашніх улюбленців" }} {{ product.target_age|default:"" }}</li>
+                  <li><strong>Основні інгредієнти:</strong> {{ product.main_ingredients|default:"Див. на упаковці" }}</li>
+                  <li><strong>Вага упаковки:</strong> {{ product.weight_variants|join:", "|default:"Не вказано" }}</li>
+                  <li><strong>Виробник:</strong> {{ product.manufacturer.name|default:"CuteCare Pets Inc." }}</li>
+                  <li><strong>Термін придатності:</strong> {{ product.shelf_life|default:"18 місяців" }}</li>
+                  </ul>
+          </div>
+
+          <div x-show="activeTab === 'reviews'" id="reviews-tab-content">
+              <div class="flex flex-col lg:flex-row gap-6 lg:gap-8">
+                  <div class="lg:w-2/5 bg-white rounded-lg shadow-lg p-5 sm:p-6" x-data="{ rating: 0, hoverRating: 0 }" data-aos="fade-right" data-aos-delay="100">
+                      <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-5">Залишити відгук</h3>
+                      {% if user.is_authenticated %}
+                      <form action="{% url 'main:submit_review' product.id %}" method="POST" class="space-y-4">
+                          {% csrf_token %}
+                          <div>
+                              <label class="block text-xs font-medium text-gray-700 mb-1">Ваша оцінка</label>
+                              <div class="flex space-x-1 text-xl sm:text-2xl text-gray-300">
+                                  <template x-for="star in 5" :key="star">
+                                      <button type="button" @click="rating = star" @mouseover="hoverRating = star" @mouseleave="hoverRating = 0"
+                                              class="focus:outline-none transition-colors duration-150"
+                                              :class="{'text-yellow-400': hoverRating >= star || rating >= star, 'text-gray-300': !(hoverRating >= star || rating >= star) }">
+                                          <i class="fas fa-star"></i>
+                                      </button>
+                                  </template>
+                              </div>
+                              <input type="hidden" name="rating" x-model="rating" required>
+                          </div>
+
+                          <div>
+                              <label for="review-title" class="block text-xs font-medium text-gray-700 mb-1">Заголовок відгуку</label>
+                              <input type="text" name="subject" id="review-title"
+                                     class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-200 py-2 px-3"
+                                     placeholder="Наприклад: Чудовий корм!">
+                          </div>
+
+                          <div>
+                              <label for="review-text-area" class="block text-xs font-medium text-gray-700 mb-1">Текст відгуку</label>
+                              <textarea id="review-text-area" name="review"
+                                        class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-200 py-2 px-3 resize-none min-h-[6rem] max-h-[12rem] overflow-y-auto"
+                                        rows="3"
+                                        placeholder="Поділіться своїми враженнями детальніше..." required></textarea>
+                          </div>
+
+                          <div>
+                              <button type="submit"
+                                      class="w-full flex items-center justify-center px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-full shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 transform hover:scale-105">
+                                  <i class="fas fa-paper-plane mr-1.5 text-xs"></i> Відправити відгук
+                              </button>
+                          </div>
+                      </form>
+                      {% else %}
+                      <p class="text-sm text-gray-600">
+                          Ви повинні увійти, щоб залишити відгук.
+                          <a href="{% url 'users:login' %}?next={{ request.path }}" class="text-indigo-600 hover:underline font-medium">Увійти</a>
+                      </p>
+                      {% endif %}
+                  </div>
+
+                  <div class="lg:w-3/5 mt-6 lg:mt-0">
+                      <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-5">Відгуки клієнтів <span class="text-sm text-gray-500 font-normal">({{ reviews|length|default:0 }})</span></h3>
+                      <div class="space-y-5">
+                          {% if reviews %}
+                              {% for review_item in reviews %}
+                              <div class="bg-white rounded-lg shadow-lg p-4 sm:p-5 transition-shadow duration-300 hover:shadow-xl" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter0 1 50 %}">
+                                  <div class="flex items-start space-x-3">
+                                      {% if review_item.user.image.url %}
+                                      <img src="{{ review_item.user.image.url }}" alt="Аватар {{ review_item.user.username }}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover flex-shrink-0">
+                                      {% else %}
+                                      <img src="https://placehold.co/40x40/93c5fd/ffffff?text={{ review_item.user.username|slice:':1'|upper }}" alt="Аватар {{ review_item.user.username }}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover flex-shrink-0 bg-gray-200 text-gray-500 flex items-center justify-center text-lg font-semibold">
+                                      {% endif %}
+                                      <div class="flex-1">
+                                          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-0.5">
+                                              <h4 class="text-sm sm:text-base font-semibold text-gray-800">{{ review_item.user.username }}</h4>
+                                              <p class="text-2xs sm:text-xs text-gray-500 mt-0.5 sm:mt-0">{{ review_item.created_at|date:"d M Y, H:i" }}</p>
+                                          </div>
+                                          <div class="flex items-center text-yellow-400 text-xs sm:text-sm mb-1">
+                                              {% for i in "12345"|make_list %}
+                                                  {% if i|add:0 <= review_item.rating %}
+                                                      <i class="fas fa-star"></i>
+                                                  {% else %}
+                                                      <i class="far fa-star"></i>
+                                                  {% endif %}
+                                              {% endfor %}
+                                              {% if review_item.is_verified_purchase %}
+                                              <span class="ml-1.5 text-2xs text-green-600 font-medium bg-green-50 px-1 py-0.5 rounded hidden sm:inline-block"><i class="fas fa-check-circle mr-0.5"></i> Перевірений покупець</span>
+                                              {% endif %}
+                                          </div>
+                                          {% if review_item.subject %}
+                                          <h5 class="text-sm sm:text-base font-medium text-gray-700 mb-1">{{ review_item.subject }}</h5>
+                                          {% endif %}
+                                          <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                                              {{ review_item.review|linebreaks }}
+                                          </p>
+                                      </div>
+                                  </div>
+                              </div>
+                              {% endfor %}
+                          {% else %}
+                              <p class="text-gray-600">Ще немає відгуків для цього товару. Станьте першим!</p>
+                          {% endif %}
+                          
+                          {% if reviews.has_other_pages %}
+                           <div class="text-center mt-6" data-aos="fade-up">
+                               <a href="?page={{ reviews.next_page_number }}#reviews-tab-content" class="px-5 py-2 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-full hover:bg-indigo-100 transition duration-300 transform hover:scale-105">
+                                   Завантажити ще відгуки
+                               </a>
+                           </div>
+                          {% endif %}
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+
+
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const reviewTextArea = document.getElementById('review-text-area');
+    if (reviewTextArea) {
+      reviewTextArea.addEventListener('input', () => {
+        reviewTextArea.style.height = 'auto'; 
+        reviewTextArea.style.height = reviewTextArea.scrollHeight + 'px'; 
+      });
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href === '#') return;
+
+            const targetId = href.substring(1); // Remove #
+            let targetElement = document.getElementById(targetId);
+
+            if (targetId === 'reviews-tab-content' || this.href.includes('#reviews-tab-content')) {
+                const reviewsTabButton = document.getElementById('reviews-tab');
+                if (reviewsTabButton) {
+                    const tabContainer = reviewsTabButton.closest('[x-data]');
+                    if (tabContainer && tabContainer.__x) {
+                        if (tabContainer.__x.data.activeTab !== undefined) {
+                            tabContainer.__x.data.activeTab = 'reviews';
+                        } else {
+                            reviewsTabButton.click();
+                        }
+                    } else {
+                       reviewsTabButton.click();
+                    }
+                }
+                if (!targetElement) targetElement = document.getElementById('reviews-tab-content');
+            }
+            
+            if (targetElement) {
+                e.preventDefault();
+                setTimeout(() => {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }, 100);
+            }
+        });
+    });
+  });
+</script>
 {% endblock content %}

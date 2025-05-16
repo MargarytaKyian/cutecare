@@ -8,6 +8,10 @@ from users.models import User
 class Category(models.Model):
     name = models.CharField(max_length=20, unique=True)
     slug = models.SlugField(max_length=20, unique=True)
+    image = models.ImageField(upload_to='categories/%Y/%m/%d/',
+                              blank=True, null=True,
+                              verbose_name="Image")
+    available = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['name']
@@ -19,7 +23,6 @@ class Category(models.Model):
         return reverse("main:product_list_by_category",
                        args=[self.slug])
     
-
     def __str__(self):
         return self.name
     
