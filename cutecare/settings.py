@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,10 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-9w)0#u0$2+d4t%x7rkp(rpy@^e-cc)712$oxlq!epfsv&4a!$)'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = []
 
@@ -46,6 +47,8 @@ INSTALLED_APPS = [
     'orders',
     'payment',
     'favorite',
+    'services',
+    'appointments',
 ]
 
 MIDDLEWARE = [
@@ -150,8 +153,8 @@ AUTH_USER_MODEL = 'users.User'
 
 TAILWIND_APP_NAME = 'theme'
 
-STRIPE_PUBLISHABLE_KEY = 'pk_test_51REjb1Em2e1v2t6J8aOJOtD1cFkVpevzWZZ17VuLFWYZoUBEEKdp6ikLA2PLbtjGPPvU4OwxkpB5IJJYeQJL6ObP00zYrXAZnr'
-STRIPE_SECRET_KEY = 'sk_test_51REjb1Em2e1v2t6J7fTUA5Hmj6h6p9veMmrGs1DeiTLmcBcW9Odomh6bWp1AUFd5OqJDVgCKnnbz1ee5649PJZ8h00qhG0RbZs'
+STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY')
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
 STRIPE_API_VERSION = '2025-03-31.basil'
 
-STRIPE_WEBHOOK_SECRET = 'whsec_14e43cb6108aa3357037e35d1ab8a8fb8264c5ef52ae2fe32d5e7a5b0bb0c425'
+STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET')

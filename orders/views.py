@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from .models import OrderItem
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from .models import Order, OrderItem
 from .forms import OrderCreateForm
 from cart.cart import Cart
 
@@ -28,3 +30,25 @@ def order_create(request):
                   'order/create.html',
                   {'cart': cart,
                    'form': form})
+
+
+@login_required
+def order_history(request):
+    user_order_list = Order.objects.filter(user=request.user).order_by('-created')
+    
+    orders_per_page = 5
+    paginator = Paginator(user_order_list, orders_per_page)
+    
+    page_number = request.GET.get('page')
+    
+    try:
+        current_page_orders = paginator.page(page_number)
+    except PageNotAnInteger:
+        current_page_orders = paginator.page(1)
+    except EmptyPage:
+        current_page_orders = paginator.page(paginator.num_pages)
+    
+    context = {
+        'orders': current_page_orders,
+    }
+    return render(request, 'order/order_history.html', context)

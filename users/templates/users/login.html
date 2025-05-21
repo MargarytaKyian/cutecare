@@ -98,16 +98,6 @@
     </div>
 </section>
 
-<style>
-    @keyframes fade-in {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .animate-fade-in {
-        animation: fade-in 0.8s ease-out;
-    }
-</style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -133,10 +123,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const initialSubmittedValue = ("{{ form.username.value|default:''|escapejs }}").trim();
 
-        // 'displayLogin' = true означає показати поле "Логін"
-        // 'displayLogin' = false означає показати поле "Email"
         function updateLoginFieldsUI(displayLogin) { 
-            if (displayLogin) { // Показати "Логін"
+            if (displayLogin) {
                 loginFieldDiv.classList.remove('hidden');
                 loginInputElement.required = true;
                 loginInputElement.disabled = false;
@@ -144,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 emailFieldDiv.classList.add('hidden');
                 emailInputElement.required = false;
                 emailInputElement.disabled = true;
-            } else { // Показати "Email"
+            } else {
                 emailFieldDiv.classList.remove('hidden');
                 emailInputElement.required = true;
                 emailInputElement.disabled = false;
@@ -155,41 +143,34 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
-        // Визначаємо початковий стан: Логін за замовчуванням
         let initiallyDisplayLogin = true; 
 
         if (initialSubmittedValue) {
             if (initialSubmittedValue.includes('@')) {
                 emailInputElement.value = initialSubmittedValue;
                 loginInputElement.value = ''; 
-                initiallyDisplayLogin = false; // Був введений email, тому показуємо email
+                initiallyDisplayLogin = false;
             } else { 
                 loginInputElement.value = initialSubmittedValue;
                 emailInputElement.value = ''; 
-                initiallyDisplayLogin = true; // Був введений логін, тому показуємо логін
+                initiallyDisplayLogin = true;
             }
         } else {
             emailInputElement.value = '';
             loginInputElement.value = '';
-            // initiallyDisplayLogin залишається true (показувати Логін за замовчуванням)
         }
 
-        // Встановлюємо стан перемикача:
-        // Якщо initiallyDisplayLogin = true (показуємо Логін), перемикач НЕ вибраний (checked = false).
-        // Якщо initiallyDisplayLogin = false (показуємо Email), перемикач вибраний (checked = true).
         toggleLoginMethod.checked = !initiallyDisplayLogin; 
         
         updateLoginFieldsUI(initiallyDisplayLogin);
 
         toggleLoginMethod.addEventListener('change', function() {
-            // this.checked = true означає, що користувач перемкнув на праву мітку (Електронна пошта).
-            // this.checked = false означає, що користувач перемкнув на ліву мітку (Логін).
             const displayLoginNow = !this.checked; 
             updateLoginFieldsUI(displayLoginNow);
 
-            if (displayLoginNow) { // Активували "Логін", очищуємо поле email
+            if (displayLoginNow) {
                 emailInputElement.value = '';
-            } else { // Активували "Електронна пошта", очищуємо поле логіна
+            } else {
                 loginInputElement.value = '';
             }
         });

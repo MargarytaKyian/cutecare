@@ -1,95 +1,449 @@
 {% extends "main/base.html" %}
 {% load static %}
 
-{% block title %}Profile{% endblock title %}
+{% block title %}Особистий кабінет | Інтернет-магазин{% endblock %}
 
 {% block content %}
-    <div class="d-flex">
-        <div class="windowp d-flex bg-white p-4 mb-4 mx-2 rounded">
-            <form action="{% url 'users:profile' %}" method="post" enctype="multipart/form-data">
-                <h2 class="mb-2">Особистий Кабінет</h2>
-                {% csrf_token %}
-                <div class="d-flex">
-                    <div class="1box">
-                        <div class="col-md-12 mb-3">
-                            {% if user.image %}
-                                <img id="avatarPreview" src="{{ user.image.url }}" alt="Avatar" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
-                            {% else %}
-                                <img id="avatarPreview" src="{% static 'img/noimage.jpg' %}" alt="Avatar" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
-                            {% endif %}
-                            <input type="file" class="form-control form-styleprofile mt-2" id="id_image" name="image" accept="image/*" onchange="previewImage(event)">
-                        </div>
-                        <div class="col-md-12 mb-3">
-                            <button type="submit" name="delete_avatar" class="btn btn-danger">Видалити Зображення</button>
-                        </div>
-                        <div class="col-md-12 mb-3">
-                            <label for="id_first_name" class="form-label">First Name</label>
-                            <input type="text" class="form-control form-styleprofile" id="id_first_name"
-                                name="first_name" placeholder="Your First Name" value="{{ form.first_name.value }}" required>
-                        </div>
-                        <div class="col-md-12 mb-3">
-                            <label for="id_last_name" class="form-label">Last Name</label>
-                            <input type="text" class="form-control form-styleprofile" id="id_last_name"
-                                name="last_name" placeholder="Your Last Name" value="{{ form.last_name.value }}" required>
-                        </div>
+<div class="bg-gradient-to-br from-indigo-100 via-white to-indigo-200 min-h-screen py-22 px-4">
+    <div class="container mx-auto max-w-5xl bg-white rounded-xl shadow-lg p-10 animate-fade-in">
+        <div class="flex flex-col lg:flex-row lg:space-x-12">
+
+            <div class="flex flex-col items-center justify-start w-full lg:w-1/3 mb-8 lg:mb-0">
+                <div class="relative mb-4 group cursor-pointer" id="avatarDisplayArea">
+                    <img id="currentAvatar"
+                         src="{% if user.image %}{{ user.image.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
+                         alt="User Avatar"
+                         class="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-indigo-500 shadow-md transition duration-300 ease-in-out group-hover:brightness-75">
+                    <div class="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition duration-300 ease-in-out">
+                        <span class="text-white font-semibold text-sm flex items-center"><i class="fas fa-camera mr-2"></i>Змінити фото</span>
                     </div>
-                    <div class="box2">
-                        <div class="col-md-12 mb-3">
-                            <label for="id_username" class="form-label">Username</label>
-                            <input type="text" class="form-control form-styleprofile" id="id_username"
-                                name="username" placeholder="Your Username" value="{{ form.username.value }}" required>
+                </div>
+
+                <button onclick="removeAvatar()" class="mt-4 px-4 py-2 bg-white text-red-600 border border-red-300 font-semibold rounded-full shadow-sm hover:bg-red-50 hover:border-red-400 transition duration-300 flex items-center text-sm">
+                    <i class="fas fa-trash-alt mr-2"></i>Видалити фото
+                </button>
+            </div>
+
+            <div class="w-full lg:w-2/3 space-y-8">
+                <div class="space-y-4">
+                    <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4 flex items-center">
+                        <i class="fas fa-user-circle text-indigo-500 mr-3"></i>Користувач
+                    </h2>
+                    <div class="flex flex-col md:flex-row text-sm">
+                        <div class="flex-1 space-y-3 pr-4">
+                            <div><span class="font-medium text-gray-500">Логін:</span> <span id="loginText" class="text-gray-900">{{ user.username }}</span></div>
+                            <div><span class="font-medium text-gray-500">Електронна пошта:</span> <span id="emailText" class="text-gray-900 break-all">{{ user.email }}</span></div>
+                            <div><span class="font-medium text-gray-500">Номер телефону:</span> <span id="phoneText" class="text-gray-900">{{ user.phone_number|default:"Не вказано" }}</span></div>
                         </div>
-                        <div class="col-md-12 mb-3">
-                            <label for="id_email" class="form-label">Email</label>
-                            <input type="email" class="form-control form-styleprofile" id="id_email"
-                                name="email" placeholder="Your Email" value="{{ form.email.value }}" required>
+                        <div class="w-full md:w-px h-px md:h-auto bg-gray-200 my-4 md:my-0 md:mx-4"></div>
+                        <div class="flex-1 space-y-3 md:pl-4">
+                            <div><span class="font-medium text-gray-500">Ім'я:</span> <span id="firstNameText" class="text-gray-900">{{ user.first_name }}</span></div>
+                            <div><span class="font-medium text-gray-500">Прізвище:</span> <span id="lastNameText" class="text-gray-900">{{ user.last_name }}</span></div>
+                            <div><span class="font-medium text-gray-500">По батькові:</span> <span id="middleNameText" class="text-gray-900">{{ user.middle_name|default:"Не вказано" }}</span></div>
                         </div>
                     </div>
                 </div>
-                <div class="btns d-flex gap-4 mt-4">
-                    <button type="submit" class="profile.btn">Зберегти</button>
-                    <a href="{% url 'user:logout' %}" class="profile-btn">Вийти</a>
-                </div>
-            </form>
-            <div class="orders">
-                <h2 class="mb-2">Мої замовлення</h2>
-                {% if orders %}
-                    <div class="orderss">
-                        {% for order in orders %}
-                            <div class="order-cart">
-                                <h5 class="order-title">Замовлення №{{ order.id }}</h5>
-                                <p class="order-desc">
-                                    {% for item in order.items.all %}
-                                        <div class="orders-carts">
-                                            <span class="ord-car-itm">Назва: </span><a href="{% url 'main:product_detail' item.product.slug %}">{{ item.product.name }}</a>
-                                            <br>
-                                            <span class="ord-car-itm">Кількість: </span> {{ item.quantity }},
-                                            <span class="ord-car-itm">Ціна: ₴{{ item.price }}</span>
-                                            <br>
-                                            <span class="ord-car-itm">Дата: </span> {{ order.created }}
-                                        </div>
-                                    {% endfor %}
-                                </p>
-                            </div>
-                        {% endfor %}
+
+                <div class="space-y-4">
+                    <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4 flex items-center"><i class="fas fa-paw text-indigo-500 mr-3"></i>Улюбленець</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                        <div><span class="font-medium text-gray-500">Ім'я:</span> <span id="petName" class="text-gray-900">Чакі (приклад)</span></div>
+                        <div><span class="font-medium text-gray-500">Вік:</span> <span id="petAge" class="text-gray-900">10 років (приклад)</span></div>
+                        <div><span class="font-medium text-gray-500">Порода:</span> <span id="petBreed" class="text-gray-900">Такса (приклад)</span></div>
                     </div>
-                {% else %}
-                    <h4 class="noorders">Ви ще не зробили жодного замовлення.</h4>
-                {% endif %}
+                </div>
+
+                <div class="space-y-4">
+                    <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4 flex items-center"><i class="fas fa-lock text-indigo-500 mr-3"></i>Конфіденційна інформація</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm mb-6">
+                        <div><span class="font-medium text-gray-500">Країна:</span> <span id="cityText" class="text-gray-900">{{ user.city|default:"Не вказано" }}</span></div>
+                        <div><span class="font-medium text-gray-500">Адреса:</span> <span id="addressText" class="text-gray-900">{{ user.address|default:"Не вказано" }}</span></div>
+                        <div><span class="font-medium text-gray-500">Поштовий індекс:</span> <span id="postalText" class="text-gray-900">{{ user.postal_code|default:"Не вказано" }}</span></div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0">
+                        <button onclick="openEditModal()" class="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-full shadow-md hover:bg-indigo-700 transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-pencil-alt mr-2"></i>Редагувати інформацію
+                        </button>
+                        <button onclick="openDeleteModal()" class="px-5 py-2.5 bg-red-600 text-white font-semibold rounded-full shadow-md hover:bg-red-700 transition duration-300 flex items-center justify-center">
+                            <i class="fas fa-trash-alt mr-2"></i>Видалити профіль
+                        </button>
+                    </div>
+                     <div class="mt-4">
+                        <a href="{% url 'user:logout' %}" class="inline-flex items-center justify-center px-5 py-2.5 bg-gray-500 text-white font-semibold rounded-full shadow-md hover:bg-gray-600 transition duration-300">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Вийти
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>    
+    </div>
+</div>
 
-    <!-- JavaScript для попереднього перегляду аватарки -->
-    <script>
-        function previewImage(event) {
-            var reader = new FileReader();
-            reader.onload = function() {
-                var output = document.getElementById('avatarPreview');
-                output.src = reader.result;
-            };
-            reader.readAsDataURL(event.target.files[0]);
+<div id="previewModal" class="fixed inset-0 flex items-center justify-center backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300 z-50">
+    <div id="modalContent" class="bg-white p-6 rounded-2xl shadow-2xl scale-90 opacity-0 transition-all duration-300 w-auto min-w-[300px]">
+        <h2 class="text-lg font-semibold mb-4 text-center">Попередній перегляд</h2>
+        <img id="previewImage" src="" alt="Preview" class="w-32 h-32 mx-auto rounded-full object-cover mb-6 border-4 border-gray-200">
+        <div class="flex justify-center space-x-4">
+            <button onclick="confirmAvatar()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full flex items-center transition duration-300">
+                <i class="fas fa-check mr-2"></i>Підтвердити
+            </button>
+            <button onclick="cancelAvatar()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-full flex items-center transition duration-300">
+                <i class="fas fa-times mr-2"></i>Скасувати
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="deleteModal" class="fixed inset-0 flex items-center justify-center backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300 z-50">
+    <div id="deleteModalContent" class="bg-white p-8 rounded-2xl shadow-2xl scale-90 opacity-0 transition-all duration-300 w-[90vw] max-w-md">
+        <div class="text-center">
+            <i class="fas fa-exclamation-triangle text-red-500 text-5xl mb-4"></i>
+            <h2 class="text-2xl font-semibold mb-3">Підтвердження видалення</h2>
+            <p class="text-gray-600 mb-6">Ви дійсно хочете видалити свій профіль? Цю дію не можна буде скасувати.</p>
+        </div>
+        <div class="flex justify-center space-x-4 mt-6">
+            <button onclick="deleteProfile()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full flex items-center transition duration-300">
+                <i class="fas fa-trash-alt mr-2"></i>Так, видалити
+            </button>
+            <button onclick="closeDeleteModal()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full flex items-center transition duration-300">
+                <i class="fas fa-ban mr-2"></i>Скасувати
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="editModal" class="fixed inset-0 flex items-center justify-center backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300 z-50 p-4">
+    <div id="editModalContent" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl scale-90 opacity-0 transition-all duration-300 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <form action="{% url 'users:profile' %}" method="post" enctype="multipart/form-data" id="profileEditForm">
+            {% csrf_token %}
+            <input type="hidden" name="delete_avatar_flag" id="deleteAvatarFlag" value="false">
+
+            <h2 class="text-2xl font-semibold mb-6 text-center text-gray-800">Редагування профілю</h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
+                <div class="space-y-4">
+                    <input type="file" id="id_image" name="image" class="hidden" accept="image/*" onchange="showPreview(event)">
+                    <div class="text-sm text-gray-600">
+                        <p><span class="font-medium">Фото профілю:</span> Щоб змінити фото, натисніть на поточний аватар на сторінці. Нове фото буде завантажено при збереженні форми.</p>
+                    </div>
+
+                    <div>
+                        <label for="editLogin" class="block text-sm font-medium text-gray-700 mb-1">Логін</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-user text-gray-400"></i></div>
+                            <input id="editLogin" name="username" type="text" placeholder="Введіть логін" value="{{ form.username.value|default:user.username }}"
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="editEmail" class="block text-sm font-medium text-gray-700 mb-1">Електронна пошта</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-envelope text-gray-400"></i></div>
+                            <input id="editEmail" name="email" type="email" placeholder="Введіть електронну пошту" value="{{ form.email.value|default:user.email }}"
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="editPhone" class="block text-sm font-medium text-gray-700 mb-1">Телефон</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-phone text-gray-400"></i></div>
+                            <input id="editPhone" name="phone_number" type="tel" placeholder="Введіть номер телефону" value="{{ user.phone_number|default:'' }}"
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">Новий пароль (залиште порожнім, щоб не змінювати)</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-lock text-gray-400"></i></div>
+                            <input id="newPassword" name="new_password" type="password" placeholder="Введіть новий пароль"
+                                   class="w-full pl-10 pr-12 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
+                            <button type="button" onclick="togglePasswordVisibility('newPassword', this)" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-indigo-500 transition"><i class="fas fa-eye-slash"></i></button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Підтвердження пароля</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-lock text-gray-400"></i></div>
+                            <input id="confirmPassword" name="confirm_password" type="password" placeholder="Підтвердіть новий пароль"
+                                   class="w-full pl-10 pr-12 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
+                            <button type="button" onclick="togglePasswordVisibility('confirmPassword', this)" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-indigo-500 transition"><i class="fas fa-eye-slash"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label for="editFirstName" class="block text-sm font-medium text-gray-700 mb-1">Ім'я</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-id-card text-gray-400"></i></div>
+                            <input id="editFirstName" name="first_name" type="text" placeholder="Введіть ім'я" value="{{ form.first_name.value|default:user.first_name }}"
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="editLastName" class="block text-sm font-medium text-gray-700 mb-1">Прізвище</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-id-card text-gray-400"></i></div>
+                            <input id="editLastName" name="last_name" type="text" placeholder="Введіть прізвище" value="{{ form.last_name.value|default:user.last_name }}"
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="editMiddleName" class="block text-sm font-medium text-gray-700 mb-1">По батькові</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-id-card text-gray-400"></i></div>
+                            <input id="editMiddleName" name="middle_name" type="text" placeholder="Введіть по батькові" value="{{ user.middle_name|default:'' }}"
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="editCity" class="block text-sm font-medium text-gray-700 mb-1">Країна</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-planet text-gray-400"></i></div>
+                            <input id="editCity" name="city" type="text" placeholder="Введіть країну" value="{{ user.city|default:'' }}"
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="editAddress" class="block text-sm font-medium text-gray-700 mb-1">Адреса</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-location-dot text-gray-400"></i></div>
+                            <input id="editAddress" name="address" type="text" placeholder="Введіть адресу" value="{{ user.address|default:'' }}"
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="editPostal" class="block text-sm font-medium text-gray-700 mb-1">Поштовий індекс</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-location-dot text-gray-400"></i></div>
+                            <input id="editPostal" name="postal_code" type="text" placeholder="Введіть поштовий індекс" value="{{ user.postal_code|default:'' }}"
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center space-x-4 mt-8">
+                <button type="submit" onclick="return preSubmitValidation(event)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-full flex items-center transition duration-300">
+                    <i class="fas fa-save mr-2"></i>Зберегти
+                </button>
+                <button type="button" onclick="closeEditModal()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2.5 px-6 rounded-full flex items-center transition duration-300">
+                    <i class="fas fa-times mr-2"></i>Скасувати
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fade-in 0.8s ease-out;
+    }
+</style>
+
+<script>
+    let tempAvatarData = '';
+    const avatarActualInput = document.getElementById('id_image');
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const avatarDisplayArea = document.getElementById('avatarDisplayArea');
+        if (avatarDisplayArea && avatarActualInput) {
+            avatarDisplayArea.onclick = () => avatarActualInput.click();
         }
-    </script>
+    });
+
+    function showPreview(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+            tempAvatarData = e.target.result;
+            document.getElementById('previewImage').src = tempAvatarData;
+            const modal = document.getElementById('previewModal');
+            const content = document.getElementById('modalContent');
+
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            modal.classList.add('opacity-100');
+            setTimeout(() => {
+                content.classList.remove('scale-90', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 50);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function closePreviewModal() {
+        const modal = document.getElementById('previewModal');
+        const content = document.getElementById('modalContent');
+
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-90', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }, 300);
+    }
+
+    function confirmAvatar() {
+        if (tempAvatarData) {
+            document.getElementById('currentAvatar').src = tempAvatarData;
+            console.log("Аватар візуально оновлено. Файл буде завантажено при збереженні форми.");
+        }
+        closePreviewModal();
+    }
+
+    function cancelAvatar() {
+        tempAvatarData = '';
+        if (avatarActualInput) {
+            avatarActualInput.value = '';
+        }
+        closePreviewModal();
+    }
+
+    function removeAvatar() {
+        const defaultAvatarSrc = "{% static 'images/default-avatar.png' %}";
+        document.getElementById('currentAvatar').src = defaultAvatarSrc;
+        if (avatarActualInput) {
+            avatarActualInput.value = '';
+        }
+        document.getElementById('deleteAvatarFlag').value = 'true';
+        console.log("Аватар візуально видалено. Зміна буде збережена при відправці форми (потрібно обробити delete_avatar_flag на сервері).");
+        tempAvatarData = '';
+    }
+
+    function openEditModal() {
+        const modal = document.getElementById('editModal');
+        const content = document.getElementById('editModalContent');
+        modal.classList.remove('pointer-events-none', 'opacity-0');
+        modal.classList.add('opacity-100');
+        setTimeout(() => {
+            content.classList.remove('scale-90', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 50);
+
+        document.getElementById('editLogin').value = document.getElementById('loginText').innerText;
+        document.getElementById('editEmail').value = document.getElementById('emailText').innerText;
+        document.getElementById('editFirstName').value = document.getElementById('firstNameText').innerText;
+        document.getElementById('editLastName').value = document.getElementById('lastNameText').innerText;
+        
+        const middleNameText = document.getElementById('middleNameText').innerText;
+        document.getElementById('editMiddleName').value = (middleNameText === "Не вказано" || middleNameText === null) ? "" : middleNameText;
+        
+        const phoneText = document.getElementById('phoneText').innerText;
+        document.getElementById('editPhone').value = (phoneText === "Не вказано" || phoneText === null) ? "" : phoneText;
+
+        const cityText = document.getElementById('cityText').innerText;
+        document.getElementById('editCity').value = (cityText === "Не вказано" || cityText === null) ? "" : cityText;
+
+        const addressText = document.getElementById('addressText').innerText;
+        document.getElementById('editAddress').value = (addressText === "Не вказано" || addressText === null) ? "" : addressText;
+
+        const postalText = document.getElementById('postalText').innerText;
+        document.getElementById('editPostal').value = (postalText === "Не вказано" || postalText === null) ? "" : postalText;
+        
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+        setPasswordVisibility('newPassword', false);
+        setPasswordVisibility('confirmPassword', false);
+        document.getElementById('deleteAvatarFlag').value = 'false';
+        }
+
+    function closeEditModal() {
+        const modal = document.getElementById('editModal');
+        const content = document.getElementById('editModalContent');
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-90', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }, 300);
+    }
+
+    function preSubmitValidation(event) {
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (newPassword && newPassword !== confirmPassword) {
+            alert('Новий пароль та його підтвердження не співпадають!');
+            if(event) event.preventDefault();
+            return false;
+        }
+        
+        document.getElementById('loginText').innerText = document.getElementById('editLogin').value;
+        document.getElementById('emailText').innerText = document.getElementById('editEmail').value;
+        document.getElementById('firstNameText').innerText = document.getElementById('editFirstName').value;
+        document.getElementById('lastNameText').innerText = document.getElementById('editLastName').value;
+        document.getElementById('middleNameText').innerText = document.getElementById('editMiddleName').value || "Не вказано";
+        document.getElementById('phoneText').innerText = document.getElementById('editPhone').value || "Не вказано";
+        document.getElementById('addressText').innerText = document.getElementById('editAddress').value || "Не вказано";
+
+        console.log("Дані підготовлені до відправки на сервер.");
+        return true;
+    }
+
+    function openDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        const content = document.getElementById('deleteModalContent');
+        modal.classList.remove('pointer-events-none', 'opacity-0');
+        modal.classList.add('opacity-100');
+        setTimeout(() => {
+            content.classList.remove('scale-90', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 50);
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        const content = document.getElementById('deleteModalContent');
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-90', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }, 300);
+    }
+
+    function deleteProfile() {
+        console.log("Запит на видалення профілю (потрібна реалізація на сервері).");
+        alert("Функція видалення профілю потребує серверної реалізації. Наприклад, перенаправлення на URL для видалення.");
+        closeDeleteModal();
+    }
+
+    function togglePasswordVisibility(inputId, button) {
+        const input = document.getElementById(inputId);
+        const icon = button.querySelector('i');
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        }
+    }
+
+    function setPasswordVisibility(inputId, visible) {
+        const input = document.getElementById(inputId);
+        const button = input.closest('.relative').querySelector('button');
+        if (!button) return; 
+        const icon = button.querySelector('i');
+        if (!icon) return;
+
+        if (visible) {
+            input.type = "text";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        } else {
+            input.type = "password";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        }
+    }
+</script>
 
 {% endblock content %}

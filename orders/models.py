@@ -9,10 +9,12 @@ class Order(models.Model):
                              blank=True, null=True, default=None)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
+    middle_name = models.CharField(max_length=50, blank=True, null=True)
     email = models.EmailField()
-    city = models.CharField(max_length=100)
-    address = models.CharField(max_length=250)
-    postal_code = models.CharField(max_length=20)
+    phone_number = models.CharField(max_length=50, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    address = models.CharField(max_length=250, blank=True, null=True)
+    postal_code = models.CharField(max_length=20, blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     paid = models.BooleanField(default=False)
@@ -62,3 +64,4 @@ class OrderItem(models.Model):
 
     def get_cost(self):
         return self.price * self.quantity
+        

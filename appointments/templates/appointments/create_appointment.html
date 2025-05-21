@@ -1,0 +1,74 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title|default:"Запис на послугу" }} | CuteCare{% endblock %}
+
+{% block content %}
+<section class="py-12 sm:py-16 bg-gradient-to-br from-indigo-100 via-white to-indigo-200 min-h-screen flex items-center justify-center" id="appointment-form-section">
+    <div class="w-full max-w-xl mx-auto px-4 sm:px-6 lg:px-8" data-aos="fade-up" data-aos-delay="100">
+        <div class="bg-white shadow-2xl rounded-xl p-6 sm:p-8 md:p-10">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-indigo-600 tracking-tight mb-2">{{ page_title|default:"Запис на послугу" }}</h1>
+                {% if service %}
+                <p class="text-md text-gray-700">Послуга: <span class="font-semibold text-indigo-700">{{ service.name }}</span></p>
+                {% endif %}
+            </div>
+
+            <form method="post" novalidate class="space-y-6">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="mb-4 p-3 bg-red-50 border border-red-300 text-sm text-red-700 rounded-lg" role="alert">
+                    <strong class="font-bold">Виникла помилка:</strong>
+                    <ul class="mt-1 list-disc list-inside">
+                        {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% for field in form %}
+                <div class="relative">
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-800 mb-1.5">
+                        {{ field.label }}
+                        {% if field.field.required %}<span class="text-red-500 ml-0.5">*</span>{% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.help_text %}
+                    <p class="mt-2 text-xs text-gray-500">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                    {% if field.errors %}
+                    <div class="mt-1.5">
+                        {% for error in field.errors %}
+                        <p class="text-xs text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full flex items-center justify-center py-3 px-6 border border-transparent rounded-full shadow-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 ease-in-out transform hover:scale-[1.02]">
+                        <i class="fas fa-paper-plane mr-2 text-sm"></i> Відправити запит
+                    </button>
+                </div>
+            </form>
+
+            {% if service %}
+            <p class="text-center mt-8">
+                <a href="{{ service.get_absolute_url|default_if_none:'services:service_list' }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:underline transition-colors">
+                    <i class="fas fa-arrow-left mr-1.5"></i> Повернутися до послуги {{ service.name }}
+                </a>
+            </p>
+            {% else %}
+            <p class="text-center mt-8">
+                <a href="{% url 'services:service_list' %}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:underline transition-colors">
+                    <i class="fas fa-arrow-left mr-1.5"></i> Повернутися до списку послуг
+                </a>
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock content %}

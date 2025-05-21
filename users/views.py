@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from orders.models import Order, OrderItem
 from .models import User
-from django.contrib.auth import login as auth_login
+from django.contrib.auth import login as auth_login, update_session_auth_hash
 
 # Create your views here.
 
@@ -49,37 +49,77 @@ def registration(request):
 
 @login_required
 def profile(request):
+    user_instance = request.user
+    
     if request.method == 'POST':
-        form = ProfileForm(data=request.POST, instance=request.user, files=request.FILES)
-        if 'delete_avatar' in request.POST:
-            request.user.image.delete(save=True)
-            messages.success(request, 'Аватар було видалено.')
-            return HttpResponseRedirect(reverse('user:profile'))
-        elif form.is_valid():
-            form.save()
-            messages.success(request, 'Профіль було змінено.')
-            return HttpResponseRedirect(reverse('user:profile'))
-    else:
-        form = ProfileForm(instance=request.user)
+        form = ProfileForm(data=request.POST, instance=user_instance, files=request.FILES)
 
-    orders = Order.objects.filter(user=request.user).prefetch_related(
+        avatar_deleted_message = None
+        if request.POST.get('delete_avatar_flag') == 'true':
+            if user_instance.image:
+                user_instance.image.delete(save=False)
+                user_instance.image = None
+                avatar_deleted_message = 'Аватар було видалено.'
+        
+        if form.is_valid():
+            form.save()
+            user_to_save = form.save(commit=False)
+            new_password = request.POST.get('new_password')
+            confirm_password = request.POST.get('confirm_password')
+            password_message = None
+
+            if new_password:
+                if new_password == confirm_password:
+                    user_to_save.set_password(new_password)
+                    password_message = 'Пароль було успішно змінено.'
+                else:
+                    messages.error(request, 'Паролі не співпадають. Пароль не було змінено.')
+                    form.add_error('new_password', 'Паролі не співпадають.') 
+            
+            user_to_save.save()
+
+            if avatar_deleted_message and not user_to_save.image:
+                 messages.success(request, avatar_deleted_message)
+            
+            if password_message:
+                update_session_auth_hash(request, user_to_save)
+                messages.success(request, password_message)
+            
+            if not avatar_deleted_message and not password_message:
+                 messages.success(request, 'Профіль було успішно оновлено.')
+            elif password_message and not avatar_deleted_message :
+                 messages.success(request, 'Профіль було успішно оновлено.')
+
+
+            return HttpResponseRedirect(reverse('user:profile'))
+        else:
+            messages.error(request, 'Будь ласка, виправте помилки у формі.')
+            
+    else:
+        form = ProfileForm(instance=user_instance)
+
+    orders = Order.objects.filter(user=user_instance).prefetch_related(
         Prefetch(
             'items',
             queryset=OrderItem.objects.select_related('product'),
         )
     ).order_by('-id')
 
-    return render(request, 'users/profile.html', {'form': form, 'orders': orders})
+    context = {
+        'form': form, 
+        'orders': orders,
+        'user': user_instance
+    }
+    return render(request, 'users/profile.html', context)
 
 
 def logout(request):
-    cart_data = request.session.get(settings.CART_SESSION_ID)
-
+    
     auth.logout(request)
 
-    if cart_data:
-        request.session[settings.CART_SESSION_ID] = cart_data
-        request.session.modified = True 
-
+    if settings.CART_SESSION_ID in request.session:
+        del request.session[settings.CART_SESSION_ID]
+        request.session.modified = True
+    
     messages.info(request, "Ви вийшли з системи.")
     return redirect(reverse('user:login'))

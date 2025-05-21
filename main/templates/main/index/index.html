@@ -112,10 +112,15 @@
                         <div class="flex items-center justify-between mb-4">
                             <div>
                                 {% if product.discount %}
-                                    <span class="text-gray-500 text-md line-through mr-2">₴{{ product.price|floatformat:2 }}</span>
-                                    <span class="text-indigo-600 text-xl font-bold">₴{{ product.sell_price|floatformat:2 }}</span>
+                                    <span class="text-gray-500 text-md line-through mr-1">{{ product.price|floatformat:0 }}₴</span>
+                                    <span class="text-indigo-600 text-xl font-bold">{{ product.sell_price|floatformat:0 }}₴</span>
+                                    {% if product.price and product.sell_price %}
+                                    <span class="ml-1.5 text-xs font-medium text-green-600 bg-green-100 px-1.5 py-0.5 rounded">
+                                        Знижка {{ product.discount|floatformat:0 }}%
+                                    </span>
+                                    {% endif %}
                                 {% else %}
-                                    <span class="text-indigo-600 text-xl font-bold">₴{{ product.price|floatformat:2 }}</span>
+                                    <span class="text-indigo-600 text-xl font-bold">{{ product.price|floatformat:0 }}₴</span>
                                 {% endif %}
                             </div>
                         </div>

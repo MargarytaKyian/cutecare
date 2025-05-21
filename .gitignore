@@ -5,5 +5,7 @@ __pycache__/
 .vscode
 .idea
 
+.env
+
 db.sqlite3
 media/
