@@ -1,69 +1,175 @@
 {% extends "main/base.html" %}
 {% load static %}
 
-{% block title %}Content{% endblock title %}
+{% block title %}Оформлення замовлення | CuteCare{% endblock title %}
 
 {% block content %}
-    <div class="forcreate">
-        <div class="profile bg-white p-4 mb-4 mx-2">
-            <h2 class="mb-2">Створити замовлення</h2>
-            <form action="" method="post" class="order-form">
-                {% csrf_token %}
-                <div class="col-md-12 mb-3">
-                    <label for="id_first_name" class="form-label">First Name</label>
-                    <input type="text" class="form-control form-styleprofile" id="id_first_name"
-                    name="first_name" placeholder="Your First Name" value="{{ form.first_name.value|default:'' }}" required>
-                </div>
-                <div class="col-md-12 mb-3">
-                    <label for="id_last_name" class="form-label">Last Name</label>
-                    <input type="text" class="form-control form-styleprofile" id="id_last_name"
-                    name="last_name" placeholder="Your Last Name" value="{{ form.last_name.value|default:'' }}" required>
-                </div>
-                <div class="col-md-12 mb-3">
-                    <label for="id_middle_name" class="form-label">Middle Name</label>
-                    <input type="text" class="form-control form-styleprofile" id="id_middle_name"
-                    name="middle_name" placeholder="Your Middle Name" value="{{ form.middle_name.value|default:'' }}" required>
-                </div>
-                <div class="col-md-12 mb-3">
-                    <label for="id_email" class="form-label">Email</label>
-                    <input type="text" class="form-control form-styleprofile" id="id_email"
-                    name="email" placeholder="Your Email" value="{{ form.email.value|default:'' }}" required>
-                </div>
-                <div class="col-md-12 mb-3">
-                    <label for="id_address" class="form-label">Address</label>
-                    <input type="text" class="form-control form-styleprofile" id="id_address"
-                    name="address" placeholder="Your Address" value="{{ form.address.value|default:'' }}" required>
-                </div>
-                <div class="col-md-12 mb-3">
-                    <label for="id_phone_number" class="form-label">Phone</label>
-                    <input type="text" class="form-control form-styleprofile" id="id_phone_number"
-                    name="phone_number" placeholder="Your Phone" value="{{ form.phone_number.value|default:'' }}" required>
-                </div>
-                <div class="col-md-12 mb-3">
-                    <label for="id_postal_code" class="form-label">Postal Code</label>
-                    <input type="text" class="form-control form-styleprofile" id="id_postal_code"
-                    name="postal_code" placeholder="Your Postal Code" value="{{ form.postal_code.value|default:'' }}" required>
-                </div>
-                <div class="col-md-12 mb-3">
-                    <label for="id_city" class="form-label">City</label>
-                    <input type="text" class="form-control form-styleprofile" id="id_city"
-                    name="city" placeholder="Your City" value="{{ form.city.value|default:'' }}" required>
-                </div>
-                <p><input type="submit" value="Розмістити Замовлення"></p>
-                {% csrf_token %}
-            </form>
-        </div>
-        <div class="checkout">
-            <h1>До сплати</h1>
-            <div class="order-info">
-                {% for item in cart %}
-                    <li>
-                        {{ item.quantity }} х {{ item.product.name }}
-                        <p>₴{{ item.total_price }}</p>
-                    </li>
-                {% endfor %}
-                <p>Загальна сума: ₴{{ cart.get_total_price }}</p>
+<section class="py-12 sm:py-16 bg-gradient-to-br from-indigo-100 via-white to-indigo-200 min-h-screen flex items-start justify-center" data-aos="fade-in">
+    <div class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
+
+            <div class="lg:col-span-2 bg-white shadow-2xl rounded-xl p-6 sm:p-8 md:p-10" data-aos="fade-up" data-aos-delay="100">
+                <h2 class="text-2xl sm:text-3xl font-bold text-indigo-600 tracking-tight mb-6 sm:mb-8 text-center">
+                    <i class="fas fa-shopping-cart mr-2 text-indigo-500"></i>Оформлення замовлення
+                </h2>
+                <form action="" method="post" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-5">
+                        <div>
+                            <label for="id_first_name" class="block text-sm font-semibold text-gray-800 mb-1.5">Ім'я <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="fas fa-user text-gray-400"></i>
+                                </span>
+                                <input type="text" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 
+                                focus:border-indigo-500 focus:outline-none transition text-sm" id="id_first_name"
+                                name="first_name" placeholder="Ваше ім'я" value="{{ form.first_name.value|default:user.first_name|default:'' }}" required>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="id_last_name" class="block text-sm font-semibold text-gray-800 mb-1.5">Прізвище <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="fas fa-user text-gray-400"></i>
+                                </span>
+                                <input type="text" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 
+                                focus:border-indigo-500 focus:outline-none transition text-sm" id="id_last_name"
+                                name="last_name" placeholder="Ваше прізвище" value="{{ form.last_name.value|default:user.last_name|default:'' }}" required>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="id_middle_name" class="block text-sm font-semibold text-gray-800 mb-1.5">По батькові</label>
+                             <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="fas fa-user text-gray-400"></i>
+                                </span>
+                                <input type="text" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 
+                                focus:border-indigo-500 focus:outline-none transition text-sm" id="id_middle_name"
+                                name="middle_name" placeholder="Ваше по батькові" value="{{ form.middle_name.value|default:user.middle_name|default:'' }}">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="id_email" class="block text-sm font-semibold text-gray-800 mb-1.5">Email <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="fas fa-envelope text-gray-400"></i>
+                                </span>
+                                <input type="email" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 
+                                focus:border-indigo-500 focus:outline-none transition text-sm" id="id_email"
+                                name="email" placeholder="Ваш email" value="{{ form.email.value|default:user.email|default:'' }}" required>
+                            </div>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label for="id_address" class="block text-sm font-semibold text-gray-800 mb-1.5">Адреса <span class="text-red-500">*</span></label>
+                             <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="fas fa-map-marker-alt text-gray-400"></i>
+                                </span>
+                                <input type="text" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 
+                                focus:border-indigo-500 focus:outline-none transition text-sm" id="id_address"
+                                name="address" placeholder="Ваша адреса" value="{{ form.address.value|default:user.address|default:'' }}" required>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="id_phone_number" class="block text-sm font-semibold text-gray-800 mb-1.5">Номер телефону <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="fas fa-phone text-gray-400"></i>
+                                </span>
+                                <input type="tel" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 
+                                focus:border-indigo-500 focus:outline-none transition text-sm" id="id_phone_number"
+                                name="phone_number" placeholder="Ваш номер телефону" value="{{ form.phone_number.value|default:user.phone_number|default:'' }}" required>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="id_postal_code" class="block text-sm font-semibold text-gray-800 mb-1.5">Поштовий індекс</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="fas fa-mail-bulk text-gray-400"></i>
+                                </span>
+                                <input type="text" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 
+                                focus:border-indigo-500 focus:outline-none transition text-sm" id="id_postal_code"
+                                name="postal_code" placeholder="Ваш поштовий індекс" value="{{ form.postal_code.value|default:user.postal_code|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                             <label for="id_city" class="block text-sm font-semibold text-gray-800 mb-1.5">Місто <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <i class="fas fa-city text-gray-400"></i>
+                                </span>
+                                <input type="text" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 
+                                focus:border-indigo-500 focus:outline-none transition text-sm" id="id_city"
+                                name="city" placeholder="Ваше місто" value="{{ form.city.value|default:user.city|default:'' }}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4">
+                        <button type="submit" class="w-full flex items-center justify-center py-3 px-6 border border-transparent rounded-full shadow-md 
+                        text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 
+                        transition duration-200 ease-in-out transform hover:scale-[1.02]">
+                            <i class="fas fa-check-circle mr-2 text-sm"></i>Підтвердити Замовлення
+                        </button>
+                    </div>
+                </form>
             </div>
+
+            <div class="lg:col-span-1 bg-white shadow-xl rounded-xl p-6 sm:p-8 sticky top-28" data-aos="fade-up" data-aos-delay="200">
+                <h1 class="text-xl sm:text-2xl font-bold text-indigo-600 mb-6 pb-3 border-b border-gray-200 flex items-center">
+                   <i class="fas fa-receipt mr-3 text-indigo-500"></i> До сплати
+                </h1>
+                {% if cart %}
+                <div class="order-info space-y-3">
+                    <ul class="divide-y divide-gray-100">
+                        {% for item in cart %}
+                        <li class="py-3 flex items-start justify-between text-sm">
+                            <div class="flex-grow pr-2">
+                                <span class="font-medium text-gray-800">{{ item.product.name }}</span>
+                                <span class="block text-xs text-gray-500">Кількість: {{ item.quantity }}</span>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <span class="font-semibold text-indigo-600 whitespace-nowrap">{{ item.total_price|floatformat:0 }}₴</span>
+                                {% if item.product.discount > 0 %}
+                                    <span class="block text-xs text-green-600 font-medium">Знижка: {{ item.product.discount|floatformat:0 }}%</span>
+                                {% endif %}
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="mt-6 pt-4 border-t border-gray-200">
+                        <div class="flex justify-between items-center text-lg font-bold text-gray-800">
+                            <span>Загальна сума:</span>
+                            <span class="text-indigo-700">{{ cart.get_total_price|floatformat:0 }}₴</span>
+                        </div>
+                        {% if has_any_discount_in_cart %}
+                            <div class="mt-5 text-xs text-gray-500 text-center">
+                                <i class="fas fa-info-circle text-indigo-500 mr-1"></i>Примітка: Загальна сума розрахована з урахуванням наявних знижок!
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                 <div class="text-center py-6">
+                    <i class="fas fa-shopping-basket text-4xl text-gray-300 mb-3"></i>
+                    <p class="text-gray-600">Ваш кошик порожній.</p>
+                    <a href="{% url 'main:product_list' %}" class="mt-4 inline-block text-sm font-medium text-indigo-600 
+                    hover:text-indigo-800 hover:underline transition-colors">
+                        Перейти до товарів <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
         </div>
     </div>
+</section>
 {% endblock content %}

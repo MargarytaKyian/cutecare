@@ -1,0 +1,620 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}CuteCare Pet AI Chatbot{% if active_session and active_session.title %} - {{ active_session.title }}{% elif active_session %} - Чат{% endif %}{% endblock %}
+
+{% block content %}
+<div class="flex flex-col h-[calc(100vh-66px)] antialiased text-gray-700">
+  <div class="relative bg-gradient-to-br from-indigo-600 to-purple-700 text-white shadow-md sticky top-0 z-20 overflow-hidden">
+    <div class="absolute inset-0 opacity-10 mix-blend-overlay">
+        <svg class="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" fill="currentColor" aria-hidden="true">
+            <path d="M0 100 C40 0 60 0 100 100 Z"></path>
+        </svg>
+    </div>
+    <div class="relative px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center">
+          <button id="sidebar-toggle-button" class="text-white hover:text-purple-100 focus:outline-none mr-2 p-2 rounded-full 
+          hover:bg-white/10 transition duration-150 ease-in-out" aria-label="Toggle history" aria-expanded="false">
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+          <div class="ml-2 flex items-center">
+            <img src="{% static 'img/petshopicon.png' %}" alt="Paw Icon" class="w-10 h-10 mr-2 hidden sm:inline-block flex-shrink-0 rounded-full bg-white/10 p-1">
+            <div>
+                <h1 class="text-lg sm:text-xl font-semibold text-white leading-tight">CuteCare Pet-AI</h1>
+                <p id="chat-current-date" class="text-xs text-indigo-100 leading-tight"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex-1 relative overflow-hidden bg-gradient-to-br from-indigo-100 via-white to-pink-50">
+    <aside id="chat-sidebar"
+           class="absolute z-40 top-0 left-0 h-full
+                  w-64 sm:w-80 bg-indigo-700 text-white shadow-2xl
+                  transform -translate-x-full transition-transform duration-300 ease-in-out
+                  flex flex-col rounded-r-xl">
+      <div class="flex items-center justify-between p-4 border-b border-indigo-500 sticky top-0 bg-indigo-700 rounded-tr-xl z-10">
+        <h2 class="text-lg font-semibold">Мої консультації</h2>
+        <button id="close-sidebar-button" class="text-indigo-200 hover:text-white p-1 rounded-md focus:outline-none focus:ring-2 focus:ring-white" aria-label="Close history">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+      
+      <div class="p-3 border-b border-indigo-600">
+        <a href="{% url 'chatbot:create_new_chat' %}" 
+           class="w-full flex items-center justify-center px-4 py-2.5 text-sm font-medium text-indigo-700 bg-white rounded-lg 
+           hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-offset-2 focus:ring-offset-indigo-700 transition duration-150 ease-in-out">
+          <i class="fas fa-plus mr-2"></i>
+          Новий чат
+        </a>
+      </div>
+
+      <div id="chat-history-scroll-area" class="flex-grow p-3 overflow-y-auto custom-scrollbar-sidebar flex flex-col">
+        {% if user_sessions %}
+          <div id="history-items-list" class="space-y-2">
+            {% for session_item in user_sessions %}
+              <div class="chat-history-item-wrapper group relative" data-session-id-wrapper="{{ session_item.id }}">
+                <a href="{% url 'chatbot:chat_session' session_id=session_item.id %}" 
+                   class="chat-history-item block p-3 rounded-lg hover:bg-indigo-500 
+                          {% if active_session and active_session.id == session_item.id %}active bg-indigo-600 border border-indigo-400{% else %}border border-transparent hover:border-indigo-500{% endif %}
+                          transition-all duration-150 ease-in-out focus:outline-none focus:bg-indigo-500">
+                  <p class="text-sm font-medium truncate pr-6" title="{{ session_item.title|default:'Чат без назви' }}">
+                    {{ session_item.title|default:'Чат без назви' }}
+                  </p>
+                  <p class="text-xs text-indigo-200 mt-0.5">
+                    {{ session_item.updated_at|date:"d M, H:i" }}
+                  </p>
+                </a>
+                <button class="delete-chat-session-btn absolute top-1/2 right-2 transform -translate-y-1/2 p-1 text-indigo-300 
+                hover:text-red-400 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity duration-150 z-10" 
+                        data-session-id="{{ session_item.id }}" 
+                        data-session-title="{{ session_item.title|default:'Чат без назви'|escapejs }}"
+                        title="Видалити цей чат">
+                    <i class="fas fa-trash-alt fa-sm"></i>
+                </button>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div id="no-sessions-message" class="text-center text-indigo-200 py-10 flex-grow flex flex-col items-center justify-center">
+            <i class="fas fa-comment-medical text-4xl mb-3 text-indigo-300"></i>
+            <p class="text-sm">У вас ще немає історії чатів.</p>
+            <p class="text-xs mt-1">Натисніть "Новий чат", щоб почати.</p>
+          </div>
+        {% endif %}
+      </div>
+      <div id="clear-all-history-action-area" class="p-4 border-t border-indigo-600 sticky bottom-0 bg-indigo-700 rounded-br-xl z-10 {% if not user_sessions %}hidden{% endif %}">
+        <button id="show-clear-all-confirmation-btn" class="w-full flex items-center justify-center px-4 py-2.5 text-sm 
+        font-medium text-indigo-700 bg-white rounded-lg hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-300 
+        focus:ring-offset-2 focus:ring-offset-indigo-700 transition duration-150 ease-in-out">
+          <i class="fas fa-broom mr-2"></i> Очистити всю історію
+        </button>
+        <div id="confirmation-clear-all-ui" class="hidden mt-3">
+            <p class="text-sm text-center text-indigo-100 mb-3">Ви дійсно бажаєте очистити <strong class="font-semibold">всю</strong> історію консультацій?</p>
+            <div class="flex space-x-3">
+                <button id="confirm-clear-all-yes-btn" class="flex-1 px-3 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 
+                rounded-lg transition-colors duration-150 ease-in-out">Так, видалити все</button>
+                <button id="confirm-clear-all-no-btn" class="flex-1 px-3 py-2 text-sm font-medium text-indigo-700 bg-indigo-100 
+                hover:bg-indigo-200 rounded-lg transition-colors duration-150 ease-in-out">Скасувати</button>
+            </div>
+        </div>
+      </div>
+    </aside>
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-30 hidden opacity-0 transition-all duration-300 ease-in-out backdrop-blur-sm"></div>
+
+    <div id="messages-area" class="h-full overflow-y-auto pt-6 pb-28 px-4 sm:px-6 space-y-4 scroll-smooth">
+      {% if no_active_chat and not active_session %}
+        <div class="flex flex-col items-center justify-center h-full text-center text-gray-500 p-4">
+            <i class="fas fa-comments text-5xl sm:text-6xl mb-4 text-indigo-300"></i>
+            <h2 class="text-xl sm:text-2xl font-semibold mb-2 text-gray-700">Вітаємо у CuteCare Pet-AI!</h2>
+            <p class="text-md text-gray-600">Оберіть існуючий чат з бічної панелі або</p>
+            <p class="text-md mb-4 text-gray-600">натисніть "Новий чат", щоб розпочати консультацію.</p>
+            <a href="{% url 'chatbot:create_new_chat' %}" 
+               class="px-6 py-3 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none 
+               focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150 ease-in-out">
+              <i class="fas fa-plus mr-2"></i>
+              Створити новий чат
+            </a>
+        </div>
+      {% endif %}
+      </div>
+  </div>
+
+  {% if active_session %}
+  <div id="input-area-container" class="bg-white border-t border-gray-200 p-3 sm:p-4 shadow-top-md sticky bottom-0 z-10">
+    <form id="message-form" class="max-w-4xl mx-auto flex items-end space-x-2 sm:space-x-3">
+      <button type="button" class="text-gray-500 hover:text-indigo-600 p-2.5 rounded-full hover:bg-gray-100 transition duration-150 
+      ease-in-out flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-indigo-300" aria-label="Attach file">
+        <i class="fas fa-paperclip text-lg sm:text-xl"></i>
+      </button>
+      <textarea id="message-input"
+                placeholder="Ваше повідомлення..."
+                rows="1"
+                class="flex-1 px-4 py-2.5 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 
+                focus:border-indigo-500 text-sm resize-none overflow-y-hidden transition-shadow duration-150 ease-in-out leading-relaxed scroll-smooth"
+      ></textarea>
+      <button id="send-button" type="submit"
+        class="p-2.5 mb-0.5 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 
+        focus:ring-offset-2 transition duration-150 ease-in-out flex-shrink-0 flex items-center justify-center text-sm"
+        aria-label="Send message">
+        <i class="fas fa-paper-plane text-sm sm:text-lg transform rotate-[10deg]"></i>
+        <span class="ml-1.5 hidden sm:inline">Відправити</span>
+      </button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+
+<section class="bg-slate-50 py-12 sm:py-16 overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-10 md:mb-14" data-aos="fade-up">
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-indigo-700">
+            <i class="fas fa-microchip text-indigo-600 mr-2.5"></i>
+            ШІ-Революція у Ветеринарії
+        </h2>
+        <p class="mt-3 text-md sm:text-lg text-gray-500 max-w-2xl mx-auto">
+            Як штучний інтелект трансформує підхід до здоров'я ваших улюбленців, роблячи допомогу доступнішою та ефективнішою.
+        </p>
+    </div>
+
+    <div class="grid lg:grid-cols-5 gap-8 lg:gap-12 items-center">
+        <div class="lg:col-span-3 space-y-6">
+            <p class="text-base text-gray-600 leading-relaxed" data-aos="fade-right" data-aos-delay="100">
+                Штучний інтелект (ШІ) відкриває нову еру у ветеринарній медицині. Алгоритми машинного навчання дозволяють миттєво аналізувати симптоми, пропонувати точніші діагнози та розробляти персоналізовані плани лікування, забезпечуючи найкращий догляд за вашими домашніми тваринами.
+            </p>
+            <div class="space-y-4 pt-2">
+                <div class="flex items-start p-4 bg-white rounded-xl shadow-lg hover:shadow-indigo-100/50 transition-all duration-300 ease-in-out transform hover:-translate-y-1" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center mr-4 border border-indigo-200">
+                        <i class="fas fa-bolt text-indigo-600 text-lg"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-indigo-700">Прискорена діагностика</h4>
+                        <p class="text-sm text-gray-500 mt-0.5">Миттєвий аналіз симптомів для швидкого виявлення проблем зі здоров'ям.</p>
+                    </div>
+                </div>
+                <div class="flex items-start p-4 bg-white rounded-xl shadow-lg hover:shadow-indigo-100/50 transition-all duration-300 ease-in-out transform hover:-translate-y-1" data-aos="fade-up" data-aos-delay="250">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center mr-4 border border-indigo-200">
+                        <i class="fas fa-user-md text-indigo-600 text-lg"></i> </div>
+                    <div>
+                        <h4 class="font-semibold text-indigo-700">Персоналізоване лікування</h4>
+                        <p class="text-sm text-gray-500 mt-0.5">Індивідуальні рекомендації та плани догляду, адаптовані під вашого улюбленця.</p>
+                    </div>
+                </div>
+                 <div class="flex items-start p-4 bg-white rounded-xl shadow-lg hover:shadow-indigo-100/50 transition-all duration-300 ease-in-out transform hover:-translate-y-1" data-aos="fade-up" data-aos-delay="300">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center mr-4 border border-indigo-200">
+                        <i class="fas fa-headset text-indigo-600 text-lg"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-indigo-700">Віддалені консультації</h4>
+                        <p class="text-sm text-gray-500 mt-0.5">Доступ до ветеринарної допомоги з будь-якого місця завдяки ШІ-асистентам.</p>
+                    </div>
+                </div>
+                 <div class="flex items-start p-4 bg-white rounded-xl shadow-lg hover:shadow-indigo-100/50 transition-all duration-300 ease-in-out transform hover:-translate-y-1" data-aos="fade-up" data-aos-delay="350">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center mr-4 border border-indigo-200">
+                        <i class="fas fa-brain text-indigo-600 text-lg"></i> </div>
+                    <div>
+                        <h4 class="font-semibold text-indigo-700">Аналіз великих даних</h4>
+                        <p class="text-sm text-gray-500 mt-0.5">Використання даних для покращення прогнозів та профілактики захворювань.</p>
+                    </div>
+                </div>
+            </div>
+             <p class="text-base text-gray-600 leading-relaxed pt-2" data-aos="fade-right" data-aos-delay="400">
+                З CuteCare та передовими ШІ-технологіями, ви отримуєте не просто сервіс, а надійного партнера у піклуванні про здоров'я ваших чотирилапих друзів.
+            </p>
+        </div>
+        <div class="lg:col-span-2" data-aos="fade-left" data-aos-delay="150">
+            <div class="bg-gradient-to-br from-indigo-100 via-indigo-50 to-pink-50 p-5 sm:p-6 rounded-2xl shadow-xl">
+                <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                    <img src="https://placehold.co/300x300/6366f1/e0e7ff?text=AI+Діагностика" alt="AI Diagnosis" class="aspect-square w-full 
+                    object-cover rounded-xl shadow-md hover:scale-105 transition-transform duration-300 ease-in-out">
+                    <img src="https://placehold.co/300x300/8b5cf6/ede9fe?text=Смарт+Догляд" alt="Smart Pet Care" class="aspect-square w-full 
+                    object-cover rounded-xl shadow-md hover:scale-105 transition-transform duration-300 ease-in-out">
+                    <img src="https://placehold.co/300x300/ec4899/fce7f3?text=Онлайн+Підтримка" alt="AI Vet Online" class="aspect-square w-full 
+                    object-cover rounded-xl shadow-md hover:scale-105 transition-transform duration-300 ease-in-out">
+                    <img src="https://placehold.co/300x300/a78bfa/f5f3ff?text=Аналітика+Здоров%27я" alt="Health Analytics" class="aspect-square w-full 
+                    object-cover rounded-xl shadow-md hover:scale-105 transition-transform duration-300 ease-in-out">
+                </div>
+                <p class="text-xs text-indigo-700/80 mt-4 text-center">
+                    <i class="fas fa-paw mr-1.5"></i>Візуалізація можливостей ШІ у турботі про тварин.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-12 md:mt-16" data-aos="fade-up">
+        <details class="bg-white border border-slate-200/75 rounded-xl shadow-sm group transition-all duration-300 ease-in-out hover:border-indigo-200">
+            <summary class="flex justify-between items-center p-4 sm:p-5 cursor-pointer text-indigo-600 hover:text-indigo-700 font-semibold text-md list-none">
+                <span>Джерела та корисні матеріали</span>
+                <i class="fas fa-chevron-down transition-transform duration-300 transform group-open:rotate-180 text-indigo-500 group-hover:text-indigo-600"></i>
+            </summary>
+            <div class="p-4 sm:p-5 border-t border-slate-200/75">
+                <ul class="space-y-1.5 text-sm text-gray-500">
+                    <li><a href="#" class="hover:underline hover:text-indigo-600 transition-colors duration-200 group/link flex items-center"><i class="fas fa-external-link-alt text-xs text-indigo-400 group-hover/link:text-indigo-500 mr-2"></i>"The Future of Veterinary Medicine with AI" — Veterinary AI Journal</a></li>
+                    <li><a href="#" class="hover:underline hover:text-indigo-600 transition-colors duration-200 group/link flex items-center"><i class="fas fa-external-link-alt text-xs text-indigo-400 group-hover/link:text-indigo-500 mr-2"></i>"Applications of Artificial Intelligence in Animal Health" — PetCare Tech Review</a></li>
+                    <li><a href="#" class="hover:underline hover:text-indigo-600 transition-colors duration-200 group/link flex items-center"><i class="fas fa-external-link-alt text-xs text-indigo-400 group-hover/link:text-indigo-500 mr-2"></i>"Machine Learning for Early Disease Detection in Pets" — AI4Pets Research Group</a></li>
+                </ul>
+            </div>
+        </details>
+    </div>
+  </div>
+</section>
+
+
+<style>
+  .custom-scrollbar-sidebar::-webkit-scrollbar { width: 6px; }
+  .custom-scrollbar-sidebar::-webkit-scrollbar-thumb { background-color: #818cf8; border-radius: 10px; }
+  .custom-scrollbar-sidebar::-webkit-scrollbar-track { background-color: #3730a3; }
+  .shadow-top-md { box-shadow: 0 -3px 8px -1px rgba(0,0,0,0.07), 0 -2px 4px -1px rgba(0,0,0,0.04); }
+  .speech-bubble-ai::before { content:''; position:absolute; left:-8px; top:12px; width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-right:8px solid #6366f1;}
+  .speech-bubble-user::after { content:''; position:absolute; right:-8px; top:12px; width:0; height:0; border-top:8px solid transparent; border-bottom:8px solid transparent; border-left:8px solid #ffffff;}
+  #message-input { min-height: 46px; max-height: 150px; }
+  .chat-history-item.active { background-color: #4338ca; }
+  .chat-history-item:not(.active):hover { background-color: #4f46e5; }
+  .chat-history-item-wrapper .delete-chat-session-btn { opacity: 0; }
+  .chat-history-item-wrapper:hover .delete-chat-session-btn { opacity: 1; }
+  .chat-history-item-wrapper.removing {
+    transition: opacity 0.3s ease-out,
+                transform 0.3s ease-out,
+                max-height 0.35s cubic-bezier(0.6, -0.28, 0.735, 0.045) 0.05s,
+                padding-top 0.3s ease-out, padding-bottom 0.3s ease-out,
+                margin-top: 0.3s ease-out, margin-bottom: 0.3s ease-out;
+    opacity: 0;
+    transform: translateX(-30px) scale(0.95);
+    max-height: 0px !important;
+    padding-top: 0px !important; padding-bottom: 0px !important;
+    margin-top: 0px !important; margin-bottom: 0px !important;
+    overflow: hidden;
+    border: none !important;
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const sidebar = document.getElementById('chat-sidebar');
+  const toggleButton = document.getElementById('sidebar-toggle-button');
+  const closeSidebarButton = document.getElementById('close-sidebar-button');
+  const sidebarOverlay = document.getElementById('sidebar-overlay');
+  const messageInput = document.getElementById('message-input');
+  const messagesArea = document.getElementById('messages-area');
+  const inputAreaContainer = document.getElementById('input-area-container');
+  const chatCurrentDateElement = document.getElementById('chat-current-date');
+  const sendButton = document.getElementById('send-button');
+  const messageForm = document.getElementById('message-form');
+
+  const clearAllHistoryActionArea = document.getElementById('clear-all-history-action-area');
+  const showClearAllConfirmationBtn = document.getElementById('show-clear-all-confirmation-btn');
+  const confirmationClearAllUI = document.getElementById('confirmation-clear-all-ui');
+  const confirmClearAllYesBtn = document.getElementById('confirm-clear-all-yes-btn');
+  const confirmClearAllNoBtn = document.getElementById('confirm-clear-all-no-btn');
+  const historyItemsList = document.getElementById('history-items-list');
+  const noSessionsMessage = document.getElementById('no-sessions-message');
+
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+
+  const sendMessageApiUrl = {% if active_session %}"{% url 'chatbot:send_message_api' session_id=active_session.id %}"{% else %}null{% endif %};
+  const noActiveChatFlag = "{{ no_active_chat|yesno:'true,false' }}" === 'true';
+  const currentActiveSessionId = "{{ active_session.id|escapejs|default:'' }}";
+  const userImageURL = {% if request.user.image %}"{{ request.user.image.url|escapejs }}"{% else %}""{% endif %};
+
+
+  function setFormattedUkrainianDate() {
+    const now = new Date();
+    const months = ["січня", "лютого", "березня", "квітня", "травня", "червня", "липня", "серпня", "вересня", "жовтня", "листопада", "грудня"];
+    const dayOfMonth = now.getDate();
+    const monthName = months[now.getMonth()];
+    const year = now.getFullYear();
+    if (chatCurrentDateElement) {
+        chatCurrentDateElement.textContent = `${dayOfMonth} ${monthName} ${year} р.`;
+    }
+  }
+  setFormattedUkrainianDate();
+
+  const openSidebar = () => {
+    if (!sidebar || !sidebarOverlay || !toggleButton) return;
+    sidebar.classList.remove('-translate-x-full');
+    sidebar.classList.add('translate-x-0');
+    sidebarOverlay.classList.remove('hidden');
+    void sidebarOverlay.offsetWidth;
+    sidebarOverlay.classList.add('opacity-100');
+    toggleButton.setAttribute('aria-expanded', 'true');
+    try { document.body.style.overflow = 'hidden'; } catch(e){}
+  };
+
+  const closeSidebar = () => {
+    if (!sidebar || !sidebarOverlay || !toggleButton) return;
+    sidebar.classList.add('-translate-x-full');
+    sidebar.classList.remove('translate-x-0');
+    sidebarOverlay.classList.remove('opacity-100');
+    setTimeout(() => {
+        if (sidebarOverlay && !sidebarOverlay.classList.contains('opacity-100')) {
+            sidebarOverlay.classList.add('hidden');
+        }
+    }, 300);
+    toggleButton.setAttribute('aria-expanded', 'false');
+    try { document.body.style.overflow = ''; } catch(e){}
+  };
+
+  if (toggleButton) {
+    toggleButton.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        if (sidebar) sidebar.classList.contains('-translate-x-full') ? openSidebar() : closeSidebar(); 
+    });
+  }
+  if (closeSidebarButton) closeSidebarButton.addEventListener('click', closeSidebar);
+  if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+  function appendMessageToArea(text, sender, aosDelay = "50", type = 'message') {
+    if (!messagesArea) return null;
+    const isUser = sender === 'user';
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('flex', 'items-start', 'max-w-lg', 'py-1');
+    if (type !== 'thinking') {
+        messageElement.setAttribute('data-aos', isUser ? 'fade-left' : 'fade-right');
+        messageElement.setAttribute('data-aos-delay', aosDelay);
+    }
+    messageElement.setAttribute('data-aos-anchor', '#messages-area');
+    
+    const aiAvatarStaticUrl = "{% static 'img/petshopicon.png' %}";
+    let avatarHTML;
+
+    if (isUser) {
+        if (userImageURL) {
+            avatarHTML = `<img src="${userImageURL}" alt="User Avatar" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full ml-2.5 sm:ml-3 object-cover flex-shrink-0 border-2 border-white shadow">`;
+        } else {
+            avatarHTML = `<span class="inline-flex items-center justify-center h-9 w-9 sm:w-10 sm:h-10 rounded-full bg-indigo-500 text-white ml-2.5 sm:ml-3 flex-shrink-0 border-2 border-white shadow">
+                            <i class="fas fa-user text-sm"></i>
+                          </span>`;
+        }
+    } else {
+        avatarHTML = `<img src="${aiAvatarStaticUrl}" alt="AI Avatar" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full mr-2.5 sm:mr-3 object-cover flex-shrink-0 border-2 border-indigo-100 shadow">`;
+    }
+    
+    let messageTextHTML = text.replace(/\n/g, '<br>');
+    let messageContentHTML;
+
+    if (isUser) {
+        messageContentHTML = `
+            <div class="bg-white text-gray-700 p-3 rounded-xl shadow-md border border-gray-200 relative speech-bubble-user">
+                <p class="text-sm">${messageTextHTML}</p>
+            </div>
+            ${avatarHTML} 
+        `;
+        messageElement.classList.add('justify-end', 'ml-auto');
+    } else {
+        messageContentHTML = `
+            ${avatarHTML}
+            <div class="bg-indigo-500 text-white p-3 rounded-xl shadow-md relative speech-bubble-ai">
+                <p class="text-sm">${messageTextHTML}</p>
+            </div>
+        `;
+    }
+    messageElement.innerHTML = messageContentHTML;
+    messagesArea.appendChild(messageElement);
+    
+    if (type !== 'thinking' && typeof AOS !== 'undefined') AOS.refreshHard();
+    messagesArea.scrollTop = messagesArea.scrollHeight;
+    return messageElement;
+  }
+
+  function loadInitialMessages() {
+      if (!messagesArea) return;
+      if (noActiveChatFlag || !currentActiveSessionId) {
+          if (typeof AOS !== 'undefined') AOS.refresh();
+          return;
+      }
+      messagesArea.innerHTML = ''; 
+      const initialMessagesFromDB = JSON.parse('{{ chat_messages_db_json|escapejs|default:"[]" }}');
+      if (initialMessagesFromDB.length > 0) {
+          initialMessagesFromDB.forEach(msg => {
+              appendMessageToArea(msg.text, msg.sender, "0");
+          });
+      } else if (currentActiveSessionId) { 
+          appendMessageToArea("Вітаю! Я ваш AI-помічник PetBot. Чим можу допомогти?", 'ai', "50");
+      }
+      if (typeof AOS !== 'undefined') AOS.refresh();
+  }
+  loadInitialMessages();
+
+  async function handleSendMessage(event) {
+    event.preventDefault();
+    if (!messageInput || !sendButton || !sendMessageApiUrl || sendButton.disabled) {
+        if (!sendMessageApiUrl) {
+             console.error('API URL for sending messages is not available (no active session or URL not resolved).');
+             appendMessageToArea("Помилка: Неможливо відправити повідомлення (URL для API не визначено).", 'ai');
+        }
+        return;
+    }
+    const messageText = messageInput.value.trim();
+    if (messageText === '') return;
+    appendMessageToArea(messageText, 'user', "0");
+    const tempUserMessageText = messageInput.value;
+    messageInput.value = '';
+    messageInput.style.height = ''; 
+    adjustTextareaAndPadding();
+    sendButton.disabled = true;
+    sendButton.classList.add('opacity-70', 'cursor-not-allowed');
+    const thinkingIndicator = appendMessageToArea("PetBot думає... <i class='fas fa-spinner fa-spin ml-1'></i>", 'ai', "0", 'thinking');
+    try {
+        const apiUrl = sendMessageApiUrl;
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrftoken },
+            body: JSON.stringify({ message: tempUserMessageText })
+        });
+        if (thinkingIndicator) thinkingIndicator.remove();
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: "Сталася невідома помилка на сервері." }));
+            appendMessageToArea(`Помилка (${response.status}): ${errorData.error || response.statusText}`, 'ai');
+        } else {
+            const data = await response.json();
+            if (data.ai_message && data.ai_message.text) {
+                appendMessageToArea(data.ai_message.text, 'ai');
+                if (data.session_title && currentActiveSessionId) {
+                    const sessionLink = document.querySelector(`.chat-history-item-wrapper[data-session-id-wrapper="${currentActiveSessionId}"] .chat-history-item p.font-medium`);
+                    if (sessionLink) {
+                        sessionLink.textContent = data.session_title;
+                        sessionLink.setAttribute('title', data.session_title);
+                    }
+                    if (document.title.includes("CuteCare Pet AI Chatbot")) {
+                        document.title = `CuteCare Pet AI Chatbot - ${data.session_title}`;
+                    }
+                }
+            } else if (data.error) { appendMessageToArea(`Помилка від AI: ${data.error}`, 'ai'); }
+        }
+    } catch (error) {
+        console.error("Fetch error:", error);
+        if (thinkingIndicator) thinkingIndicator.remove();
+        appendMessageToArea("Не вдалося з\'єднатися з сервером. Перевірте інтернет або спробуйте пізніше.", 'ai');
+    } finally {
+        sendButton.disabled = false;
+        sendButton.classList.remove('opacity-70', 'cursor-not-allowed');
+        if(messageInput) messageInput.focus();
+    }
+  }
+  if (messageForm) { messageForm.addEventListener('submit', handleSendMessage); }
+  
+  const MIN_TEXTAREA_HEIGHT = 46;
+  function adjustTextareaAndPadding() {
+    if (!messageInput || !messagesArea || !inputAreaContainer) return;
+    messageInput.style.height = 'auto';
+    let scrollHeight = messageInput.scrollHeight;
+    if (scrollHeight < MIN_TEXTAREA_HEIGHT) { scrollHeight = MIN_TEXTAREA_HEIGHT; }
+    const MAX_TEXTAREA_HEIGHT = parseInt(getComputedStyle(messageInput).maxHeight) || 150;
+    if (scrollHeight > MAX_TEXTAREA_HEIGHT) {
+        scrollHeight = MAX_TEXTAREA_HEIGHT;
+        messageInput.style.overflowY = 'auto';
+    } else {
+        messageInput.style.overflowY = 'hidden';
+    }
+    messageInput.style.height = scrollHeight + 'px';
+    messagesArea.style.paddingBottom = (inputAreaContainer.offsetHeight + 10) + 'px'; 
+  }
+  
+  if (inputAreaContainer && messagesArea && messageInput) {
+      adjustTextareaAndPadding(); 
+      messageInput.addEventListener('input', adjustTextareaAndPadding);
+      messageInput.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' && !event.shiftKey) {
+              event.preventDefault();
+              if (messageForm && sendButton && !sendButton.disabled) {
+                sendButton.click(); 
+              }
+          }
+      });
+  }
+  
+  // Видалення одного чату в історії
+  document.querySelectorAll('.delete-chat-session-btn').forEach(button => {
+  button.addEventListener('click', async (event) => {
+      event.preventDefault(); 
+      event.stopPropagation();
+      
+      const sessionId = button.dataset.sessionId;
+      const sessionTitle = button.dataset.sessionTitle || "цей чат";
+
+      if (window.confirm(`Ви дійсно бажаєте видалити чат "${sessionTitle}"?`)) {
+          const deleteUrl = `/chat/api/delete_session/${sessionId}/`; 
+          try {
+              const response = await fetch(deleteUrl, {
+                  method: 'POST',
+                  headers: { 
+                      'X-CSRFToken': csrftoken,
+                      'Content-Type': 'application/json' 
+                  }
+              });
+              const data = await response.json();
+              if (response.ok && data.status === 'success') {
+                  const itemWrapperToRemove = document.querySelector(`.chat-history-item-wrapper[data-session-id-wrapper="${sessionId}"]`);
+                  if (itemWrapperToRemove) {
+                      itemWrapperToRemove.classList.add('removing');
+                      itemWrapperToRemove.addEventListener('transitionend', () => {
+                          itemWrapperToRemove.remove();
+                          updateSidebarAfterItemChange();
+                      });
+                      setTimeout(() => { 
+                         if (itemWrapperToRemove.parentNode) { itemWrapperToRemove.remove(); updateSidebarAfterItemChange(); }
+                      }, 360); 
+                  }
+                  if (sessionId === currentActiveSessionId) {
+                      window.location.href = "{% url 'chatbot:chat_home' %}";
+                  }
+              } else { 
+                  alert(`Помилка: ${data.message || 'Не вдалося видалити чат.'}`); 
+              }
+          } catch (error) { 
+              console.error('Error deleting chat session:', error); 
+              alert('Сталася помилка під час видалення чату.'); 
+          }
+      }
+  });
+});
+
+  function updateSidebarAfterItemChange() {
+      if (!historyItemsList) return;
+      const remainingItems = historyItemsList.querySelectorAll('.chat-history-item-wrapper');
+      if (remainingItems.length === 0) {
+          if (noSessionsMessage) noSessionsMessage.classList.remove('hidden');
+          if (clearAllHistoryActionArea) clearAllHistoryActionArea.classList.add('hidden');
+      } else {
+          if (noSessionsMessage) noSessionsMessage.classList.add('hidden');
+          if (clearAllHistoryActionArea) clearAllHistoryActionArea.classList.remove('hidden');
+      }
+  }
+  updateSidebarAfterItemChange();
+
+// Очищення всієї історії чатів
+  if (showClearAllConfirmationBtn) {
+      showClearAllConfirmationBtn.addEventListener('click', () => {
+          if (confirmationClearAllUI) confirmationClearAllUI.classList.remove('hidden');
+          showClearAllConfirmationBtn.classList.add('hidden');
+      });
+  }
+  if (confirmClearAllNoBtn) {
+      confirmClearAllNoBtn.addEventListener('click', () => {
+          if (confirmationClearAllUI) confirmationClearAllUI.classList.add('hidden');
+          if (showClearAllConfirmationBtn) showClearAllConfirmationBtn.classList.remove('hidden');
+      });
+  }
+  if (confirmClearAllYesBtn) {
+      confirmClearAllYesBtn.addEventListener('click', async () => {
+          const clearAllUrl = "{% url 'chatbot:clear_all_sessions_api' %}";
+          try {
+              const response = await fetch(clearAllUrl, {
+                  method: 'POST',
+                  headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/json' }
+              });
+              const data = await response.json();
+              if (response.ok && data.status === 'success') {
+                  window.location.href = "{% url 'chatbot:chat_home' %}";
+              } else { alert(`Помилка: ${data.message || 'Не вдалося очистити історію.'}`); }
+          } catch (error) { console.error('Error clearing all sessions:', error); alert('Сталася помилка.'); }
+      });
+  }
+  
+  if (typeof AOS !== 'undefined') {
+    AOS.init({ duration: 450, easing: 'ease-out-cubic', once: false, offset: 30 });
+  } else {
+    console.warn('AOS library not found. Scroll animations will be disabled.');
+  }
+});
+</script>
+{% endblock content %}

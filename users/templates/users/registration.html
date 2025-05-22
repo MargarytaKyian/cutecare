@@ -35,7 +35,8 @@
               </div>
               <input type="text" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}"
                      value="{{ form.username.value|default:'' }}" required
-                     class="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm {% if form.username.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                     class="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none 
+                     transition text-sm {% if form.username.errors %}border-red-500{% else %}border-gray-300{% endif %}"
                      placeholder="Введіть логін">
             </div>
             {% if form.username.errors %}
@@ -53,7 +54,8 @@
               </div>
               <input type="text" name="{{ form.first_name.name }}" id="{{ form.first_name.id_for_label }}"
                      value="{{ form.first_name.value|default:'' }}" required
-                     class="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm {% if form.first_name.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                     class="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none 
+                     transition text-sm {% if form.first_name.errors %}border-red-500{% else %}border-gray-300{% endif %}"
                      placeholder="Введіть ім'я">
             </div>
             {% if form.first_name.errors %}
@@ -71,7 +73,8 @@
               </div>
               <input type="text" name="{{ form.last_name.name }}" id="{{ form.last_name.id_for_label }}"
                      value="{{ form.last_name.value|default:'' }}" required
-                     class="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm {% if form.last_name.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                     class="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none 
+                     transition text-sm {% if form.last_name.errors %}border-red-500{% else %}border-gray-300{% endif %}"
                      placeholder="Введіть прізвище">
             </div>
             {% if form.last_name.errors %}
@@ -94,7 +97,8 @@
               </div>
               <input type="email" name="{{ form.email.name }}" id="{{ form.email.id_for_label }}"
                      value="{{ form.email.value|default:'' }}" required
-                     class="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm {% if form.email.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                     class="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none 
+                     transition text-sm {% if form.email.errors %}border-red-500{% else %}border-gray-300{% endif %}"
                      placeholder="Введіть електронну пошту">
             </div>
             {% if form.email.errors %}
@@ -111,7 +115,8 @@
                   <i class="fas fa-lock text-gray-400"></i>
               </div>
               <input type="password" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}" required
-                     class="w-full pl-10 pr-12 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm {% if form.password1.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                     class="w-full pl-10 pr-12 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none 
+                     transition text-sm {% if form.password1.errors %}border-red-500{% else %}border-gray-300{% endif %}"
                      placeholder="Введіть пароль">
               <button type="button" id="togglePassword" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-indigo-500 transition focus:outline-none">
                 <i class="fas fa-eye-slash"></i>
@@ -122,9 +127,6 @@
                     {% for error in form.password1.errors %}<li>{{ error }}</li>{% endfor %}
                 </ul>
             {% endif %}
-            {% if form.password1.help_text %}
-              <p class="mt-1 text-xs text-gray-500">{{ form.password1.help_text|safe }}</p>
-            {% endif %}
           </div>
 
           <div>
@@ -134,9 +136,11 @@
                   <i class="fas fa-lock text-gray-400"></i>
               </div>
               <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}" required
-                     class="w-full pl-10 pr-12 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm {% if form.password2.errors %}border-red-500{% else %}border-gray-300{% endif %}"
+                     class="w-full pl-10 pr-12 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none 
+                     transition text-sm {% if form.password2.errors %}border-red-500{% else %}border-gray-300{% endif %}"
                      placeholder="Підтвердіть пароль">
-              <button type="button" id="toggleConfirmPassword" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-indigo-500 transition focus:outline-none">
+              <button type="button" id="toggleConfirmPassword" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-indigo-500 
+              transition focus:outline-none">
                 <i class="fas fa-eye-slash"></i>
               </button>
             </div>
@@ -151,7 +155,8 @@
 
       <div class="mt-8 sm:mt-10">
         <button type="submit"
-          class="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full transition transform hover:scale-105 duration-300 cursor-pointer text-base">
+          class="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-full 
+          transition transform hover:scale-105 duration-300 cursor-pointer text-base">
           Зареєструватися
         </button>
       </div>
@@ -159,7 +164,8 @@
     </form> 
     <div class="mt-6 sm:mt-8 text-center text-sm text-gray-600">
       <p>Вже маєте акаунт?
-        <a href="{% url 'user:login' %}" class="text-indigo-600 hover:text-indigo-800 hover:underline font-semibold transition">Увійти</a>
+        <a href="{% url 'user:login' %}" class="text-indigo-600 hover:text-indigo-800 
+        hover:underline font-semibold transition">Увійти</a>
       </p>
     </div>
 

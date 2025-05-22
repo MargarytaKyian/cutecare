@@ -4,7 +4,7 @@
 {% block title %}{{ page_title|default:"Запис на послугу" }} | CuteCare{% endblock %}
 
 {% block content %}
-<section class="py-12 sm:py-16 bg-gradient-to-br from-indigo-100 via-white to-indigo-200 min-h-screen flex items-center justify-center" id="appointment-form-section">
+<section class="py-12 sm:py-16 bg-gradient-to-br from-indigo-100 via-white to-indigo-200 min-h-screen flex items-start justify-center" id="appointment-form-section" data-aos="fade-in">
     <div class="w-full max-w-xl mx-auto px-4 sm:px-6 lg:px-8" data-aos="fade-up" data-aos-delay="100">
         <div class="bg-white shadow-2xl rounded-xl p-6 sm:p-8 md:p-10">
             <div class="text-center mb-8">
@@ -56,12 +56,6 @@
             </form>
 
             {% if service %}
-            <p class="text-center mt-8">
-                <a href="{{ service.get_absolute_url|default_if_none:'services:service_list' }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:underline transition-colors">
-                    <i class="fas fa-arrow-left mr-1.5"></i> Повернутися до послуги {{ service.name }}
-                </a>
-            </p>
-            {% else %}
             <p class="text-center mt-8">
                 <a href="{% url 'services:service_list' %}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 hover:underline transition-colors">
                     <i class="fas fa-arrow-left mr-1.5"></i> Повернутися до списку послуг

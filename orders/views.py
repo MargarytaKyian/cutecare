@@ -11,6 +11,9 @@ from cart.cart import Cart
 
 def order_create(request):
     cart = Cart(request)
+
+    has_any_discount_in_cart = any(item['product'].discount > 0 for item in cart if item.get('product'))
+
     if request.method == 'POST':
         form = OrderCreateForm(request.POST, request=request)
         if form.is_valid():
@@ -29,12 +32,13 @@ def order_create(request):
     return render(request,
                   'order/create.html',
                   {'cart': cart,
-                   'form': form})
+                   'form': form,
+                   'has_any_discount_in_cart': has_any_discount_in_cart})
 
 
 @login_required
 def order_history(request):
-    user_order_list = Order.objects.filter(user=request.user).order_by('-created')
+    user_order_list = Order.objects.filter(user=request.user, paid=True).order_by('-created')
     
     orders_per_page = 5
     paginator = Paginator(user_order_list, orders_per_page)

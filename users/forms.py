@@ -24,6 +24,11 @@ class UserRegistrationForm(UserCreationForm):
         model = User
         fields = ('username', 'first_name', 'last_name', 'email')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'password1' in self.fields:
+            self.fields['password1'].help_text = None
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.first_name = self.cleaned_data['first_name']

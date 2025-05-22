@@ -44,12 +44,14 @@
 
           {% if product.images.all|length > 1 %}
           <button @click="prevImage()"
-                  class="absolute top-1/2 left-2.5 transform -translate-y-1/2 bg-white/75 hover:bg-white text-indigo-600 p-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  class="absolute top-1/2 left-2.5 transform -translate-y-1/2 bg-white/75 hover:bg-white text-indigo-600 p-2.5 rounded-full shadow-md 
+                  hover:shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   aria-label="Попереднє зображення">
             <i class="fas fa-chevron-left"></i>
           </button>
           <button @click="nextImage()"
-                  class="absolute top-1/2 right-2.5 transform -translate-y-1/2 bg-white/75 hover:bg-white text-indigo-600 p-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  class="absolute top-1/2 right-2.5 transform -translate-y-1/2 bg-white/75 hover:bg-white text-indigo-600 p-2.5 rounded-full shadow-md 
+                  hover:shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   aria-label="Наступне зображення">
             <i class="fas fa-chevron-right"></i>
           </button>
@@ -146,7 +148,8 @@
                   <button type="button" @click="quantity = Math.max(1, quantity - 1)" class="px-2.5 py-1.5 text-gray-600 hover:bg-gray-100 transition focus:outline-none">
                       <i class="fas fa-minus text-xs"></i>
                   </button>
-                  <input type="text" x-model.number="quantity" id="quantity-input-{{product.id}}" name="quantity" class="w-10 text-center border-l border-r border-gray-300 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500" readonly>
+                  <input type="text" x-model.number="quantity" id="quantity-input-{{product.id}}" name="quantity" class="w-10 text-center 
+                  border-l border-r border-gray-300 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-indigo-500" readonly>
                   <button type="button" @click="quantity++" class="px-2.5 py-1.5 text-gray-600 hover:bg-gray-100 transition focus:outline-none">
                       <i class="fas fa-plus text-xs"></i>
                   </button>
@@ -161,7 +164,9 @@
             {% for field in cart_product_form %}{% if field.is_hidden and field.name != 'quantity' %}{{ field }}{% endif %}{% endfor %}
 
             <div class="mt-auto space-y-3 sm:space-y-0 sm:flex sm:space-x-3 pt-4">
-              <button type="submit" class="w-full sm:w-auto flex-1 items-center justify-center px-6 py-2.5 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-full shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 transform hover:scale-105">
+              <button type="submit" class="w-full sm:w-auto flex-1 items-center justify-center px-6 py-2.5 text-sm font-medium text-white 
+              bg-indigo-600 border border-transparent rounded-full shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 
+              focus:ring-indigo-500 transition duration-300 transform hover:scale-105">
                 <i class="fas fa-shopping-cart mr-1.5"></i> Додати в кошик
               </button>
         </form> 
@@ -169,20 +174,26 @@
             {% if is_favorited %}
                 <form action="{% url 'favorite:remove_from_favorite' product.id %}" method="post" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="w-full sm:w-auto flex items-center justify-center px-5 py-2.5 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-full hover:bg-red-100 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-300 transform hover:scale-105 cursor-pointer">
+                    <button type="submit" class="w-full sm:w-auto flex items-center justify-center px-5 py-2.5 text-sm font-medium text-red-600 bg-red-50 
+                    border border-red-200 rounded-full hover:bg-red-100 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 
+                    transition duration-300 transform hover:scale-105 cursor-pointer">
                         <i class="fas fa-heart-broken mr-1.5"></i> Прибрати з бажань
                     </button>
                 </form>
             {% else %}
                 <form action="{% url 'favorite:add_to_favorite' product.id %}" method="post" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="w-full sm:w-auto flex items-center justify-center px-5 py-2.5 text-sm font-medium text-indigo-600 bg-indigo-50 border border-indigo-200 rounded-full hover:bg-indigo-100 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 transform hover:scale-105 cursor-pointer">
+                    <button type="submit" class="w-full sm:w-auto flex items-center justify-center px-5 py-2.5 text-sm font-medium text-indigo-600 bg-indigo-50 
+                    border border-indigo-200 rounded-full hover:bg-indigo-100 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 
+                    transition duration-300 transform hover:scale-105 cursor-pointer">
                         <i class="fas fa-heart mr-1.5"></i> У список бажань
                     </button>
                 </form>
             {% endif %}
             {% else %}
-                <a href="{% url 'users:login' %}?next={{ request.path }}" class="w-full sm:w-auto flex items-center justify-center px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 border border-gray-200 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition duration-300 transform hover:scale-105">
+                <a href="{% url 'users:login' %}?next={{ request.path }}" class="w-full sm:w-auto flex items-center justify-center px-5 py-2.5 text-sm font-medium 
+                text-gray-600 bg-gray-100 border border-gray-200 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 
+                transition duration-300 transform hover:scale-105">
                     <i class="fas fa-sign-in-alt mr-1.5"></i> Увійдіть, щоб зберегти
                 </a>
             {% endif %}
@@ -195,22 +206,26 @@
       <div class="border-b border-gray-200">
           <nav class="-mb-px flex space-x-3 sm:space-x-6" aria-label="Tabs">
               <button @click="activeTab = 'description'"
-                      :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'description', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'description' }"
+                      :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'description', 'border-transparent text-gray-500 hover:text-gray-700 
+                      hover:border-gray-300': activeTab !== 'description' }"
                       class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 focus:outline-none">
                   Опис
               </button>
               <button @click="activeTab = 'details'"
-                      :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'details', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'details' }"
+                      :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'details', 'border-transparent text-gray-500 hover:text-gray-700 
+                      hover:border-gray-300': activeTab !== 'details' }"
                       class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 focus:outline-none">
                   Характеристики
               </button>
               <button @click="activeTab = 'reviews'; setTimeout(() => { document.getElementById('reviews-tab-content').scrollIntoView({ behavior: 'smooth' }); }, 50)" id="reviews-tab"
-                      :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'reviews', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'reviews' }"
+                      :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'reviews', 'border-transparent text-gray-500 hover:text-gray-700 
+                      hover:border-gray-300': activeTab !== 'reviews' }"
                       class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 focus:outline-none">
                   Відгуки <span class="ml-0.5 bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded-full text-2xs">{{ reviews|length|default:0 }}</span>
               </button>
               <button @click="activeTab = 'delivery'"
-                      :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'delivery', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'delivery' }"
+                      :class="{ 'border-indigo-500 text-indigo-600': activeTab === 'delivery', 'border-transparent text-gray-500 hover:text-gray-700 
+                      hover:border-gray-300': activeTab !== 'delivery' }"
                       class="whitespace-nowrap py-3 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 focus:outline-none">
                   Доставка та Оплата
               </button>
@@ -275,14 +290,16 @@
                           <div>
                               <label for="review-text-area" class="block text-xs font-medium text-gray-700 mb-1">Текст відгуку</label>
                               <textarea id="review-text-area" name="review"
-                                        class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-200 py-2 px-3 resize-none min-h-[6rem] max-h-[12rem] overflow-y-auto"
+                                        class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-200 py-2 px-3 
+                                        resize-none min-h-[6rem] max-h-[12rem] overflow-y-auto"
                                         rows="3"
                                         placeholder="Поділіться своїми враженнями детальніше..." required></textarea>
                           </div>
 
                           <div>
                               <button type="submit"
-                                      class="w-full flex items-center justify-center px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-full shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 transform hover:scale-105">
+                                      class="w-full flex items-center justify-center px-5 py-2.5 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-full 
+                                      shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 transform hover:scale-105">
                                   <i class="fas fa-paper-plane mr-1.5 text-xs"></i> Відправити відгук
                               </button>
                           </div>
@@ -305,7 +322,8 @@
                                       {% if review_item.user.image.url %}
                                       <img src="{{ review_item.user.image.url }}" alt="Аватар {{ review_item.user.username }}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover flex-shrink-0">
                                       {% else %}
-                                      <img src="https://placehold.co/40x40/93c5fd/ffffff?text={{ review_item.user.username|slice:':1'|upper }}" alt="Аватар {{ review_item.user.username }}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover flex-shrink-0 bg-gray-200 text-gray-500 flex items-center justify-center text-lg font-semibold">
+                                      <img src="https://placehold.co/40x40/93c5fd/ffffff?text={{ review_item.user.username|slice:':1'|upper }}" alt="Аватар {{ review_item.user.username }}" class="w-9 h-9 
+                                      sm:w-10 sm:h-10 rounded-full object-cover flex-shrink-0 bg-gray-200 text-gray-500 flex items-center justify-center text-lg font-semibold">
                                       {% endif %}
                                       <div class="flex-1">
                                           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-0.5">
@@ -340,7 +358,8 @@
                           
                           {% if reviews.has_other_pages %}
                            <div class="text-center mt-6" data-aos="fade-up">
-                               <a href="?page={{ reviews.next_page_number }}#reviews-tab-content" class="px-5 py-2 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-full hover:bg-indigo-100 transition duration-300 transform hover:scale-105">
+                               <a href="?page={{ reviews.next_page_number }}#reviews-tab-content" class="px-5 py-2 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-full 
+                               hover:bg-indigo-100 transition duration-300 transform hover:scale-105">
                                    Завантажити ще відгуки
                                </a>
                            </div>
@@ -382,8 +401,10 @@
                 <h4 class="font-semibold text-gray-700 mb-2 text-base">Вартість доставки:</h4>
                 <ul class="list-disc list-inside space-y-1.5 pl-2">
                     <li><i class="fas fa-dollar-sign text-green-500 mr-1.5"></i> <strong>Безкоштовна доставка:</strong> На замовлення від 1500 грн (при оплаті онлайн).</li>
-                    <li><i class="fas fa-file-invoice-dollar text-gray-500 mr-1.5"></i> <strong>За тарифами перевізника:</strong> Для замовлень до 1500 грн або при виборі післяплати. Вартість розраховується перевізником залежно від ваги, габаритів та відстані.</li>
-                    <li><i class="fas fa-hand-holding-usd text-gray-500 mr-1.5"></i> <strong>Післяплата ("наложений платіж"):</strong> Додатково стягується комісія перевізника за переказ коштів (зазвичай 20 грн + 2% від суми).</li>
+                    <li><i class="fas fa-file-invoice-dollar text-gray-500 mr-1.5"></i> <strong>За тарифами перевізника:</strong> 
+                        Для замовлень до 1500 грн або при виборі післяплати. Вартість розраховується перевізником залежно від ваги, габаритів та відстані.</li>
+                    <li><i class="fas fa-hand-holding-usd text-gray-500 mr-1.5"></i> <strong>Післяплата ("наложений платіж"):</strong> 
+                        Додатково стягується комісія перевізника за переказ коштів (зазвичай 20 грн + 2% від суми).</li>
                 </ul>
             </div>
 

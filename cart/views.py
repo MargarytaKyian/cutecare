@@ -18,6 +18,7 @@ def cart_add(request, product_id):
         cart.add(product=product,
                  quantity=cd['quantity'],
                  override_quantity=cd['override'])
+        
     return redirect('cart:cart_detail')
 
 
@@ -26,9 +27,14 @@ def cart_remove(request, product_id):
     cart = Cart(request)
     product = get_object_or_404(Product, id=product_id)
     cart.remove(product)
+
     return redirect('cart:cart_detail')
 
 
 def cart_detail(request):
     cart = Cart(request)
-    return render(request, 'cart/detail.html', {'cart': cart})
+    has_any_discount_in_cart = any(item['product'].discount > 0 for item in cart if item.get('product'))
+
+    return render(request, 'cart/detail.html', 
+                  {'cart': cart,
+                   'has_any_discount_in_cart': has_any_discount_in_cart})

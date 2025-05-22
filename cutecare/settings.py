@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'favorite',
     'services',
     'appointments',
+    'chatbot',
 ]
 
 MIDDLEWARE = [
@@ -150,6 +151,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 CART_SESSION_ID = 'cart'
 
 AUTH_USER_MODEL = 'users.User'
+
+LOGIN_URL = '/user/login/'
+
+LOGIN_REDIRECT_URL = 'main:product_list'
 
 TAILWIND_APP_NAME = 'theme'
 

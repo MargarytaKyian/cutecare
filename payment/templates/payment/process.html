@@ -1,51 +1,78 @@
 {% extends "main/base.html" %}
 {% load static %}
 
-{% block title %}Payment Process{% endblock title %}
+{% block title %}Процес оплати | CuteCare{% endblock title %}
 
 {% block content %}
-    <div class="window">
-        <h2 class="pay-title">
-            Оплата
-        </h2>
-        <div class="pay-card d-flex">
-            <div class="cart-cardproc">
-                {% for item in order.items.all %}
-                    {% with product=item.product %}
-                        <div class="cart-card d-flex">
-                            <div class="cart-card-img">
-                                <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/noimage.jpg' %}{% endif %}" alt="">
+<section class="py-12 sm:py-16 bg-gradient-to-br from-indigo-100 via-white to-indigo-200 min-h-screen flex items-start justify-center" data-aos="fade-in">
+    <div class="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white shadow-2xl rounded-xl p-6 sm:p-8 md:p-10" data-aos="fade-up" data-aos-delay="100">
+            <h2 class="text-2xl sm:text-3xl font-bold text-indigo-600 tracking-tight mb-6 sm:mb-8 text-center">
+                <i class="fas fa-credit-card mr-2 text-indigo-500"></i>Оплата замовлення
+            </h2>
+
+            {% if order.items.all %}
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-200">Ваше замовлення:</h3>
+                <div class="space-y-4">
+                    {% for item in order.items.all %}
+                        {% with product=item.product %}
+                        <div class="flex items-center bg-gray-50 p-3 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
+                            <div class="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 mr-4">
+                                <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/noimage.jpg' %}{% endif %}" 
+                                     alt="{{ product.name }}" class="w-full h-full object-cover rounded-md">
                             </div>
-                            <div class="cart-card-info">
-                                <div class="cart-card-name">
-                                    <p>{{ product.name }}</p>
-                                </div>
-                                <div class="cart-card-q">
-                                    <p>Кількість: {{ item.quantity }}</p>
-                                </div>
+                            <div class="flex-grow">
+                                <p class="font-semibold text-gray-800 text-sm sm:text-base">{{ product.name }}</p>
+                                <p class="text-xs sm:text-sm text-gray-600 mt-1">Кількість: {{ item.quantity }}</p>
                             </div>
-                            <form action="{% url "cart:cart_remove" product.id %}" method="post">
-                                <input type="submit" value="Remove" class="remove-btn">
-                                {% csrf_token %}
-                            </form>
-                            <div class="cart-card-price">
+                            <div class="text-right ml-4 flex-shrink-0 w-28 sm:w-32">
                                 {% if product.discount %}
-                                    <div class="cart-price">
-                                        <p class="line opac">₴{{ product.price|floatformat:2 }}</p>
-                                        <p class="cart-total-price-ots">₴{{ product.sell_price|floatformat:2 }}</p>
-                                    </div>
+                                    <p class="text-sm sm:text-base font-semibold text-indigo-600">{{ item.get_cost|floatformat:0 }}₴</p> 
+                                    <span class="block text-xs text-green-600 font-medium">Знижка: {{ item.product.discount|floatformat:0 }}%</span>
                                 {% else %}
-                                    <p class="cart-total-price">₴{{ product.price|floatformat:2 }}</p>
-                                {% endif %}
+                                    <p class="text-sm sm:text-base font-semibold text-indigo-600">{{ item.get_cost|floatformat:2 }}₴</p> {% endif %}
                             </div>
+                            <form action="{% url "cart:cart_remove" product.id %}" method="post" class="ml-3 sm:ml-4 flex-shrink-0">
+                                {% csrf_token %}
+                                <input type="hidden" name="order_id" value="{{ order.id }}"> <button type="submit" class="text-red-500 hover:text-red-700 transition-colors 
+                                duration-150 p-1 rounded-md hover:bg-red-50" title="Видалити товар">
+                                    <i class="fas fa-trash-alt text-sm sm:text-base"></i>
+                                </button>
+                            </form>
                         </div>
-                    {% endwith %}
-                {% endfor %}
-                <form action="{% url "payment:process" %}" method="post" class="payform">
-                    <input type="submit" value="Pay now" class="paynow">
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <div class="flex justify-between items-center text-xl font-bold text-gray-800 mb-6">
+                    <span>Загальна сума до сплати:</span>
+                    <span class="text-indigo-700">{{ order.get_total_cost|floatformat:0 }}₴</span>
+                </div>
+
+                <form action="{% url "payment:process" %}" method="post">
                     {% csrf_token %}
+                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                    <button type="submit" class="w-full flex items-center justify-center py-3 px-6 border border-transparent 
+                    rounded-full shadow-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none 
+                    focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 ease-in-out transform hover:scale-[1.02]">
+                        <i class="fas fa-money-check mr-2 text-sm"></i> Перейти до оплати
+                    </button>
                 </form>
             </div>
+            {% else %}
+            <div class="text-center py-10">
+                <i class="fas fa-info-circle text-4xl text-gray-300 mb-3"></i>
+                <p class="text-gray-600 text-lg">Інформація про замовлення для оплати відсутня.</p>
+                <a href="{% url 'main:product_list' %}" class="mt-6 inline-block text-base font-medium text-indigo-600 
+                hover:text-indigo-800 hover:underline transition-colors">
+                    Повернутися до каталогу <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                </a>
+            </div>
+            {% endif %}
         </div>
     </div>
+</section>
 {% endblock content %}

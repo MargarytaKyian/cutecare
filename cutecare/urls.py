@@ -28,6 +28,7 @@ urlpatterns = [
     path('favorites/', include('favorite.urls', namespace='favorite')),
     path('services/', include('services.urls', namespace='services')),
     path('appointments/', include('appointments.urls', namespace='appointments')),
+    path('chat/', include('chatbot.urls', namespace='chatbot')),
     path('', include('main.urls', namespace='main')),
 ] 
 

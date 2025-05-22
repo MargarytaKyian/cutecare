@@ -19,7 +19,8 @@
                     </div>
                 </div>
 
-                <button onclick="removeAvatar()" class="mt-4 px-4 py-2 bg-white text-red-600 border border-red-300 font-semibold rounded-full shadow-sm hover:bg-red-50 hover:border-red-400 transition duration-300 flex items-center text-sm">
+                <button onclick="removeAvatar()" class="mt-4 px-4 py-2 bg-white text-red-600 border border-red-300 font-semibold 
+                rounded-full shadow-sm hover:bg-red-50 hover:border-red-400 transition duration-300 flex items-center text-sm">
                     <i class="fas fa-trash-alt mr-2"></i>Видалити фото
                 </button>
             </div>
@@ -61,15 +62,18 @@
                         <div><span class="font-medium text-gray-500">Поштовий індекс:</span> <span id="postalText" class="text-gray-900">{{ user.postal_code|default:"Не вказано" }}</span></div>
                     </div>
                     <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0">
-                        <button onclick="openEditModal()" class="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-full shadow-md hover:bg-indigo-700 transition duration-300 flex items-center justify-center">
+                        <button onclick="openEditModal()" class="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-full 
+                        shadow-md hover:bg-indigo-700 transition duration-300 flex items-center justify-center">
                             <i class="fas fa-pencil-alt mr-2"></i>Редагувати інформацію
                         </button>
-                        <button onclick="openDeleteModal()" class="px-5 py-2.5 bg-red-600 text-white font-semibold rounded-full shadow-md hover:bg-red-700 transition duration-300 flex items-center justify-center">
+                        <button onclick="openDeleteModal()" class="px-5 py-2.5 bg-red-600 text-white font-semibold rounded-full 
+                        shadow-md hover:bg-red-700 transition duration-300 flex items-center justify-center">
                             <i class="fas fa-trash-alt mr-2"></i>Видалити профіль
                         </button>
                     </div>
                      <div class="mt-4">
-                        <a href="{% url 'user:logout' %}" class="inline-flex items-center justify-center px-5 py-2.5 bg-gray-500 text-white font-semibold rounded-full shadow-md hover:bg-gray-600 transition duration-300">
+                        <a href="{% url 'user:logout' %}" class="inline-flex items-center justify-center px-5 py-2.5 bg-gray-500 
+                        text-white font-semibold rounded-full shadow-md hover:bg-gray-600 transition duration-300">
                             <i class="fas fa-sign-out-alt mr-2"></i>Вийти
                         </a>
                     </div>
@@ -157,7 +161,8 @@
                             <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-lock text-gray-400"></i></div>
                             <input id="newPassword" name="new_password" type="password" placeholder="Введіть новий пароль"
                                    class="w-full pl-10 pr-12 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
-                            <button type="button" onclick="togglePasswordVisibility('newPassword', this)" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-indigo-500 transition"><i class="fas fa-eye-slash"></i></button>
+                            <button type="button" onclick="togglePasswordVisibility('newPassword', this)" class="absolute inset-y-0 right-3 flex items-center 
+                            text-gray-400 hover:text-indigo-500 transition"><i class="fas fa-eye-slash"></i></button>
                         </div>
                     </div>
                     <div>
@@ -166,7 +171,8 @@
                             <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-lock text-gray-400"></i></div>
                             <input id="confirmPassword" name="confirm_password" type="password" placeholder="Підтвердіть новий пароль"
                                    class="w-full pl-10 pr-12 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
-                            <button type="button" onclick="togglePasswordVisibility('confirmPassword', this)" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-indigo-500 transition"><i class="fas fa-eye-slash"></i></button>
+                            <button type="button" onclick="togglePasswordVisibility('confirmPassword', this)" class="absolute inset-y-0 right-3 flex items-center 
+                            text-gray-400 hover:text-indigo-500 transition"><i class="fas fa-eye-slash"></i></button>
                         </div>
                     </div>
                 </div>

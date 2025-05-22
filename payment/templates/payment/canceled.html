@@ -1,11 +1,35 @@
 {% extends "main/base.html" %}
+{% load static %}
 
-{% block title %}Payment Canceled{% endblock title %}
+{% block title %}Оплату Скасовано | CuteCare{% endblock title %}
 
 {% block content %}
-    <div class="text-center mt-5">
-        <h1>Оплата була скасована!</h1>
-        <p>За детальною інформацією перейдіть до розділу "Інфо".</p>
+<section class="py-12 sm:py-16 bg-gradient-to-br from-indigo-100 via-white to-indigo-200 min-h-screen flex items-start justify-center" data-aos="fade-in">
+    <div class="w-full max-w-md sm:max-w-lg mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="bg-white shadow-2xl rounded-xl p-8 sm:p-10 md:p-12" data-aos="zoom-in" data-aos-delay="100">
+            <div class="mb-6">
+                <i class="fas fa-exclamation-triangle text-6xl sm:text-7xl text-amber-500"></i>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 tracking-tight mb-3">
+                Оплату було скасовано
+            </h1>
+            <p class="text-gray-600 text-sm sm:text-base mb-8">
+                На жаль, процес оплати не було завершено. Ваше замовлення не було оплачено. <br><br>
+                Увага! Кошик було очищено. <br>Ви можете повернутися до <a href="{% url 'main:product_list' %}" class="w-full sm:w-auto inline-flex 
+                items-center justify-center text-sm font-medium text-indigo-600 ">каталогу товарів.
+                </a>
+            </p>
+            <div class="space-y-3 sm:space-y-0 sm:flex sm:flex-wrap sm:justify-center sm:space-x-4">
+                <a href="/" class="w-full sm:w-auto inline-flex items-center justify-center 
+                px-6 py-3 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-indigo-600 
+                hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition 
+                duration-200 ease-in-out transform hover:scale-[1.02]">
+                    <i class="fas fa-home mr-2"></i>
+                    На головну
+                </a>
+            </div>
+        </div>
     </div>
-{% endblock content %}
+</section>
 
+{% endblock content %}

@@ -1,56 +1,118 @@
 {% extends "main/base.html" %}
 {% load static %}
 
-{% block title %}Cart{% endblock title %}
+{% block title %}Кошик | CuteCare{% endblock title %}
 
 {% block content %}
-    <section class="cart d-flex">
-        <div class="cart-title">
-            <h2>Кошик</h2>
+<section class="py-12 sm:py-16 bg-gradient-to-br from-indigo-100 via-white to-indigo-200 min-h-screen" data-aos="fade-in">
+    <div class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10" data-aos="fade-down">
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-indigo-600 tracking-tight">
+                <i class="fas fa-shopping-cart mr-3 text-indigo-500"></i>Ваш Кошик
+            </h2>
         </div>
-        <div class="cart-cards">
-            {% for item in cart %}
-                {% with product=item.product %}
-                    <div class="cart-card d-flex">
-                        <div class="cart-card-img">
-                            <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/noimage.jpg' %}{% endif %}" alt="">
-                        </div>
-                        <div class="cart-card-info">
-                            <div class="cart-card-name">
-                                <p>{{ product.name }}</p>
-                            </div>
-                            <div class="cart-card-q">
-                                <p>Кількість: {{ item.quantity }}</p>
-                            </div>
-                        </div>
-                        <form action="{% url "cart:cart_remove" product.id %}" method="post">
-                            <input type="submit" value="Remove" class="remove-btn">
-                            {% csrf_token %}
-                        </form>
-                        <div class="cart-cart-price">
-                            {% if product.discount %}
-                                <div class="cart-discount d-flex gap-2">
-                                    <p class="line">₴{{ product.price|floatformat:2 }}</p>
-                                    <p>₴{{ product.sell_price|floatformat:2 }}</p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
+            <div class="lg:col-span-2 bg-white shadow-2xl rounded-xl p-6 sm:p-8" data-aos="fade-up" data-aos-delay="100">
+                {% if cart %}
+                    <div class="divide-y divide-gray-200">
+                        {% for item in cart %}
+                            {% with product=item.product %}
+                            <div class="py-6 flex flex-col sm:flex-row items-center">
+                                <div class="flex-shrink-0 w-24 h-24 sm:w-32 sm:h-32 mb-4 sm:mb-0 sm:mr-6">
+                                    <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/noimage.jpg' %}{% endif %}" 
+                                         alt="{{ product.name }}" class="w-full h-full object-cover rounded-lg shadow-md">
                                 </div>
-                            {% else %}
-                                <p class="price">₴{{ product.price|floatformat:2 }}</p>
-                            {% endif %}
-                        </div>
+
+                                <div class="flex-grow text-center sm:text-left">
+                                    <h3 class="text-lg sm:text-xl font-semibold text-gray-800 hover:text-indigo-600 transition-colors">
+                                        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+                                    </h3>
+                                    
+                                    <div class="mt-2 text-center sm:text-left">
+                                        {% if product.discount %}
+                                            <span class="ml-2 text-sm text-gray-400 line-through">{{ product.price|floatformat:0 }}₴</span>
+                                            <span class="text-md sm:text-lg font-semibold text-indigo-600">{{ product.sell_price|floatformat:0 }}₴</span>
+                                            <span class="ml-2 text-xs font-medium text-green-600 bg-green-100 px-1.5 py-0.5 rounded">
+                                                Знижка {{ product.discount|floatformat:0 }}%
+                                            </span>
+                                        {% else %}
+                                            <span class="text-md sm:text-lg font-semibold text-indigo-600">{{ product.price|floatformat:0 }}₴</span>
+                                        {% endif %}
+                                        <p class="ml-2 text-xs text-gray-400 mb-6"> (ціна за одиницю)</p>
+                                    </div>
+
+                                    <form action="{% url 'cart:cart_add' product.id %}" method="post" class="mt-2 flex  justify-center sm:justify-start">
+                                        {% csrf_token %}
+                                        <p class="text-sm font-medium text-gray-600 mt-1 px-2">Кількість: </p>
+                                        <label for="quantity_{{ product.id }}" class="sr-only">Кількість</label>
+                                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" id="quantity_{{ product.id }}" class="w-16 text-sm border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 py-1 px-2">
+                                        <input type="hidden" name="override" value="True"> <button type="submit" class="ml-2 text-xs px-2 py-1 bg-indigo-100 text-indigo-700 rounded-md hover:bg-indigo-200 transition-colors">Оновити</button>
+                                    </form>
+
+                                </div>
+
+                                <div class="mt-4 sm:mt-0 sm:ml-auto flex flex-col items-center sm:items-end space-y-2">
+                                    <p class="text-lg sm:text-xl font-bold text-indigo-700">
+                                        {{ item.total_price|floatformat:0 }}₴ </p>
+                                    <form action="{% url "cart:cart_remove" product.id %}" method="post" class="w-full sm:w-auto">
+                                        {% csrf_token %}
+                                        <button type="submit" class="w-full sm:w-auto text-xs text-red-500 hover:text-red-700 font-medium py-1 px-2 rounded-md hover:bg-red-50 transition-colors duration-150 flex items-center justify-center">
+                                            <i class="fas fa-trash-alt mr-1.5"></i>Видалити
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% endwith %}
+                        {% endfor %}
                     </div>
-                {% endwith %}
-            {% endfor %}
-        </div>
-        <div class="total">
-            <h5>Загальна сума: ₴{{ cart.get_total_price }}</h5>
-        </div>
-        <div class="cart-buttons d-flex gap-3">
-            <a href="/shop" class="cart-btn">Продовжити Покупки</a>
-            {% with cart_quantity=cart|length %}
-                {% if cart_quantity > 0 %}
-                    <a href="{% url "orders:order_create" %}" class="cart-btn">Оформити Замовлення</a>
+                {% else %}
+                    <div class="text-center py-12">
+                        <i class="fas fa-cart-arrow-down text-5xl text-gray-300 mb-4"></i>
+                        <p class="text-xl text-gray-700 font-semibold mb-2">Ваш кошик порожній</p>
+                        <p class="text-gray-500 mb-6">Додайте товари, щоб побачити їх тут.</p>
+                        <a href="/shop" class="inline-flex items-center justify-center px-6 py-2.5 border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 ease-in-out">
+                            <i class="fas fa-store mr-2"></i>
+                            Перейти до товарів
+                        </a>
+                    </div>
                 {% endif %}
-            {% endwith %}
+            </div>
+
+            <div class="lg:col-span-1" data-aos="fade-up" data-aos-delay="200">
+                <div class="bg-white shadow-xl rounded-xl p-6 sticky top-28">
+                    <h3 class="text-xl font-semibold text-indigo-600 mb-5 pb-3 border-b border-gray-200 flex items-center">
+                        <i class="fas fa-file-invoice-dollar mr-2 text-indigo-500"></i>Підсумок
+                    </h3>
+                    {% if cart %}
+                        <div class="space-y-3 mb-6">
+                            <div class="flex justify-between text-xl font-bold text-gray-800 mt-3">
+                                <span>До сплати:</span>
+                                <span class="text-indigo-700">{{ cart.get_total_price|floatformat:0 }}₴</span>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            {% with cart_quantity=cart|length %}
+                                {% if cart_quantity > 0 %}
+                                <a href="{% url "orders:order_create" %}" class="w-full flex items-center justify-center py-3 px-5 border border-transparent rounded-full shadow-md text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 ease-in-out transform hover:scale-[1.02]">
+                                    <i class="fas fa-check-circle mr-2"></i>Оформити Замовлення
+                                </a>
+                                {% endif %}
+                            {% endwith %}
+                            <a href="/shop" class="w-full flex items-center justify-center py-3 px-5 border border-indigo-300 rounded-full shadow-sm text-sm font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition duration-200 ease-in-out">
+                                <i class="fas fa-arrow-left mr-2"></i>Продовжити Покупки
+                            </a>
+                        </div>
+                         {% if has_any_discount_in_cart %} <div class="mt-5 text-xs text-gray-500 text-center">
+                                <i class="fas fa-info-circle text-indigo-500 mr-1"></i>Примітка: Загальна сума розрахована з урахуванням наявних знижок!
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-gray-500 text-center py-4">Ваш кошик порожній. Додайте товари, щоб оформити замовлення.</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-    </section>
+    </div>
+</section>
 {% endblock content %}
