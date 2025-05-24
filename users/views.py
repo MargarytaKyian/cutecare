@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import auth, messages
 from django.conf import settings
 from django.urls import reverse
@@ -8,7 +8,9 @@ from .forms import UserLoginForm, UserRegistrationForm, \
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch
 from orders.models import Order, OrderItem
-from .models import User
+from pets.models import Pet
+from pets.forms import PetForm
+from users.models import User
 from django.contrib.auth import login as auth_login, update_session_auth_hash
 
 # Create your views here.
@@ -50,7 +52,53 @@ def registration(request):
 @login_required
 def profile(request):
     user_instance = request.user
+
+    add_pet_form = PetForm(prefix="add_pet")
+    edit_pet_form = PetForm(prefix="edit_pet")
     
+    editing_pet_id_on_error = None
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        if action == 'add_pet':
+            add_pet_form = PetForm(request.POST, request.FILES, prefix="add_pet")
+            if add_pet_form.is_valid():
+                pet = add_pet_form.save(commit=False)
+                pet.owner = user_instance
+                pet.save()
+                messages.success(request, f'Улюбленець "{pet.name}" успішно доданий!')
+                return HttpResponseRedirect(reverse('user:profile') + '#pets-section')
+            else:
+                messages.error(request, 'Помилка при додаванні улюбленця. Будь ласка, виправте помилки у формі.')
+        
+        elif action == 'edit_pet':
+            pet_id_to_edit = request.POST.get('pet_id')
+            pet_to_edit = get_object_or_404(Pet, id=pet_id_to_edit, owner=user_instance)
+            edit_pet_form = PetForm(request.POST, request.FILES, instance=pet_to_edit, prefix="edit_pet")
+            editing_pet_id_on_error = pet_id_to_edit
+            
+            if 'image-clear' in request.POST and pet_to_edit.image:
+                 pass
+
+            if edit_pet_form.is_valid():
+                edit_pet_form.save()
+                messages.success(request, f'Дані улюбленця "{pet_to_edit.name}" успішно оновлено!')
+                return HttpResponseRedirect(reverse('user:profile') + '#pets-section')
+            else:
+                messages.error(request, f'Помилка при редагуванні даних улюбленця "{pet_to_edit.name}". Будь ласка, виправте помилки.')
+
+        elif action == 'delete_pet':
+            pet_id_to_delete = request.POST.get('pet_id_for_delete')
+            pet_to_delete = get_object_or_404(Pet, id=pet_id_to_delete, owner=user_instance)
+            pet_name = pet_to_delete.name
+            if pet_to_delete.image:
+                pet_to_delete.image.delete(save=False)
+            pet_to_delete.delete()
+            messages.success(request, f'Улюбленець "{pet_name}" успішно видалений.')
+            return HttpResponseRedirect(reverse('user:profile') + '#pets-section')
+        
+
     if request.method == 'POST':
         form = ProfileForm(data=request.POST, instance=user_instance, files=request.FILES)
 
@@ -98,6 +146,8 @@ def profile(request):
     else:
         form = ProfileForm(instance=user_instance)
 
+    user_pets = Pet.objects.filter(owner=user_instance).order_by('name')
+
     orders = Order.objects.filter(user=user_instance).prefetch_related(
         Prefetch(
             'items',
@@ -108,9 +158,33 @@ def profile(request):
     context = {
         'form': form, 
         'orders': orders,
-        'user': user_instance
+        'user': user_instance,
+        'user_pets': user_pets,
+        'add_pet_form': add_pet_form,
+        'edit_pet_form': edit_pet_form,
+        'editing_pet_id_on_error': editing_pet_id_on_error,
+        'add_pet_action_title': 'Додати нового улюбленця',
+        'add_pet_submit_button_text': 'Додати улюбленця',
+        'edit_pet_action_title': 'Редагувати дані улюбленця',
+        'edit_pet_submit_button_text': 'Зберегти зміни',
     }
     return render(request, 'users/profile.html', context)
+
+
+@login_required
+def delete_profile(request):
+    if request.method == 'POST':
+        user_to_delete = request.user
+        user_name = user_to_delete.username
+
+        auth.logout(request)
+        user_to_delete.delete()
+        
+        messages.success(request, f'Профіль "{user_name}" було успішно видалено. Шкода, що Ви йдете.')
+        return redirect(reverse('main:product_list'))
+    else:
+        messages.warning(request, 'Видалення профілю можливе лише через підтвердження у профілі.')
+        return redirect(reverse('user:profile'))
 
 
 def logout(request):

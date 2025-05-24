@@ -22,7 +22,7 @@ order_stripe_payment.short_description = 'Stripe payment'
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['id', 'first_name', 'last_name', 'middle_name','email',
-                    'phone_number', 'address', 'postal_code', 'city', 'paid',
+                    'phone_number', 'city', 'address', 'postal_code', 'paid',
                     order_stripe_payment,'created', 'updated']
     list_filter = ['paid', 'created', 'updated']
     inlines = [OrderItemInline]

@@ -13,7 +13,7 @@
                     <img id="currentAvatar"
                          src="{% if user.image %}{{ user.image.url }}{% else %}{% static 'images/default-avatar.png' %}{% endif %}"
                          alt="User Avatar"
-                         class="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-indigo-500 shadow-md transition duration-300 ease-in-out group-hover:brightness-75">
+                         class="w-35 h-35 md:w-40 md:h-40 rounded-full object-cover border-4 border-indigo-500 shadow-md transition duration-300 ease-in-out group-hover:brightness-75">
                     <div class="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition duration-300 ease-in-out">
                         <span class="text-white font-semibold text-sm flex items-center"><i class="fas fa-camera mr-2"></i>Змінити фото</span>
                     </div>
@@ -28,7 +28,7 @@
             <div class="w-full lg:w-2/3 space-y-8">
                 <div class="space-y-4">
                     <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4 flex items-center">
-                        <i class="fas fa-user-circle text-indigo-500 mr-3"></i>Користувач
+                        <i class="fas fa-user-circle text-indigo-500 mr-3"></i>Персональна інформація
                     </h2>
                     <div class="flex flex-col md:flex-row text-sm">
                         <div class="flex-1 space-y-3 pr-4">
@@ -45,74 +45,218 @@
                     </div>
                 </div>
 
-                <div class="space-y-4">
-                    <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4 flex items-center"><i class="fas fa-paw text-indigo-500 mr-3"></i>Улюбленець</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                        <div><span class="font-medium text-gray-500">Ім'я:</span> <span id="petName" class="text-gray-900">Чакі (приклад)</span></div>
-                        <div><span class="font-medium text-gray-500">Вік:</span> <span id="petAge" class="text-gray-900">10 років (приклад)</span></div>
-                        <div><span class="font-medium text-gray-500">Порода:</span> <span id="petBreed" class="text-gray-900">Такса (приклад)</span></div>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
+                <div class="space-y-6 pt-8 mt-8 border-t border-gray-200">
                     <h2 class="text-xl font-semibold text-gray-800 border-b pb-2 mb-4 flex items-center"><i class="fas fa-lock text-indigo-500 mr-3"></i>Конфіденційна інформація</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm mb-6">
-                        <div><span class="font-medium text-gray-500">Країна:</span> <span id="cityText" class="text-gray-900">{{ user.city|default:"Не вказано" }}</span></div>
+                        <div><span class="font-medium text-gray-500">Місто:</span> <span id="cityText" class="text-gray-900">{{ user.city|default:"Не вказано" }}</span></div>
                         <div><span class="font-medium text-gray-500">Адреса:</span> <span id="addressText" class="text-gray-900">{{ user.address|default:"Не вказано" }}</span></div>
                         <div><span class="font-medium text-gray-500">Поштовий індекс:</span> <span id="postalText" class="text-gray-900">{{ user.postal_code|default:"Не вказано" }}</span></div>
                     </div>
-                    <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0">
-                        <button onclick="openEditModal()" class="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-full 
+                </div>
+
+                <div class="space-y-6 pt-8 mt-8 border-t border-gray-200" id="pets-section">
+                <div class="flex flex-col sm:flex-row justify-between -mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800 flex items-center mb-3 sm:mb-0">
+                        <i class="fas fa-paw text-indigo-500 mr-3"></i>Мої улюбленці
+                    </h2>
+                    <button type="button" onclick="openAddPetModal()"
+                       class="w-full sm:w-auto px-5 py-2.5 bg-green-500 text-white font-semibold rounded-full shadow-md hover:bg-green-600 transition duration-300 flex items-center justify-center text-sm">
+                        <i class="fas fa-plus mr-2"></i>Додати улюбленця
+                    </button>
+                </div>
+
+                {% if user_pets %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 border-t mt-8 pt-8">
+                        {% for pet_instance in user_pets %}
+                            <div class="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col transition-all duration-300 hover:shadow-2xl">
+                                <div class="relative">
+                                    {% if pet_instance.image %}
+                                        <img src="{{ pet_instance.image.url }}" alt="Фото {{ pet_instance.name }}" class="w-full h-50 object-cover">
+                                    {% else %}
+                                        <div class="w-full h-50 bg-gradient-to-br from-indigo-100 to-purple-200 flex items-center justify-center">
+                                            <i class="fas fa-paw text-5xl text-indigo-400 opacity-70"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div class="absolute top-3 right-3 flex space-x-2">
+                                        <button type="button" 
+                                           onclick="openEditPetModal('{{ pet_instance.id }}', '{{ pet_instance.name|escapejs }}', '{% if pet_instance.image %}{{ pet_instance.image.url }}{% endif %}', '{{ pet_instance.age_years|default_if_none:'' }}', '{{ pet_instance.age_months|default_if_none:'' }}', '{{ pet_instance.weight|default_if_none:''|stringformat:".2f" }}', '{{ pet_instance.species|escapejs }}', '{{ pet_instance.breed|default_if_none:''|escapejs }}', '{{ pet_instance.health_features|default_if_none:''|escapejs }}')"
+                                           title="Редагувати {{ pet_instance.name }}"
+                                           class="bg-white/80 backdrop-blur-sm text-indigo-600 hover:bg-indigo-600 hover:text-white p-2 rounded-full shadow-md transition-colors duration-200">
+                                            <i class="fas fa-pencil-alt fa-sm"></i>
+                                        </button>
+                                        <button type="button"
+                                           onclick="openDeletePetModal('{{ pet_instance.id }}', '{{ pet_instance.name|escapejs }}')"
+                                           title="Видалити {{ pet_instance.name }}"
+                                           class="bg-white/80 backdrop-blur-sm text-red-500 hover:bg-red-500 hover:text-white p-2 rounded-full shadow-md transition-colors duration-200">
+                                            <i class="fas fa-trash-alt fa-sm"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="p-5 flex flex-col flex-grow">
+                                    <h3 class="text-xl font-bold text-indigo-700 mb-1">{{ pet_instance.name }}</h3>
+                                    <p class="text-sm text-gray-500 mb-2">{{ pet_instance.species }}{% if pet_instance.breed %} <span class="text-gray-400">•</span> {{ pet_instance.breed }}{% endif %}</p>
+                                    <div class="text-sm text-gray-600 space-y-1 mb-3 flex-grow">
+                                        <p><i class="fas fa-birthday-cake fa-fw mr-2 text-indigo-400 opacity-80"></i><strong>Вік:</strong> {{ pet_instance.get_age_display }}</p>
+                                        <p><i class="fas fa-weight-hanging fa-fw mr-2 text-teal-500 opacity-80"></i><strong>Вага:</strong> {{ pet_instance.get_weight_display }}</p>
+                                        {% if pet_instance.health_features %}
+                                            <p class="flex items-start"><i class="fas fa-notes-medical fa-fw mr-2 text-red-400 opacity-80 pt-1"></i>
+                                                <span><strong>Особливості:</strong> {{ pet_instance.health_features|truncatewords_html:10 }}</span></p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-10 px-6 bg-indigo-50 rounded-xl">
+                            <img src="{% static 'images/empty_pets.svg' %}" alt="Немає улюбленців" class="mx-auto h-32 mb-4 opacity-70">
+                            <p class="text-lg text-gray-600">У вас ще немає профілів улюбленців.</p>
+                            <p class="text-sm text-gray-400 mt-1">Натисніть "Додати улюбленця", щоб створити картку для вашого пухнастого друга!</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0 pt-8 mt-8 border-t border-gray-200">
+                    <button onclick="openEditModal()" class="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-full 
                         shadow-md hover:bg-indigo-700 transition duration-300 flex items-center justify-center">
-                            <i class="fas fa-pencil-alt mr-2"></i>Редагувати інформацію
-                        </button>
-                        <button onclick="openDeleteModal()" class="px-5 py-2.5 bg-red-600 text-white font-semibold rounded-full 
-                        shadow-md hover:bg-red-700 transition duration-300 flex items-center justify-center">
-                            <i class="fas fa-trash-alt mr-2"></i>Видалити профіль
-                        </button>
-                    </div>
-                     <div class="mt-4">
-                        <a href="{% url 'user:logout' %}" class="inline-flex items-center justify-center px-5 py-2.5 bg-gray-500 
-                        text-white font-semibold rounded-full shadow-md hover:bg-gray-600 transition duration-300">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Вийти
-                        </a>
-                    </div>
+                        <i class="fas fa-pencil-alt mr-2"></i>Редагувати інформацію
+                    </button>
+                    <button onclick="openDeleteModal()" class="w-full sm:w-auto px-5 py-2.5 bg-red-600 text-white font-semibold rounded-full shadow-md 
+                    hover:bg-red-700 transition duration-300 flex items-center justify-center text-sm">
+                        <i class="fas fa-trash-alt mr-2"></i>Видалити профіль
+                    </button>
+                    <a href="{% url 'user:logout' %}" class="w-full sm:w-auto px-5 py-2.5 bg-gray-500 text-white font-semibold rounded-full shadow-md 
+                    hover:bg-gray-600 transition duration-300 flex items-center justify-center text-sm">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Вийти
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+
+<div id="addPetModal" class="fixed inset-0 flex items-center justify-center backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300 z-50 p-4">
+    <div id="addPetModalContent" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl scale-90 opacity-0 transition-all duration-300 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <form method="post" action="{% url 'user:profile' %}" enctype="multipart/form-data" id="addPetForm">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_pet">
+            <h2 class="text-2xl font-semibold mb-6 text-center text-gray-800">{{ add_pet_action_title }}</h2>
+            
+            {% for field in add_pet_form %}
+                <div class="mb-4">
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p class="mt-1 text-xs text-red-500">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            
+            <div class="flex justify-center space-x-4 mt-8">
+                <button type="submit" class="px-5 py-2.5 bg-green-500 text-white font-semibold rounded-full shadow-md hover:bg-green-600 transition duration-300 flex items-center justify-center text-sm">
+                    <i class="fas fa-plus mr-2"></i>{{ add_pet_submit_button_text }}
+                </button>
+                <button type="button" onclick="closeAddPetModal()" class="px-5 py-2.5 bg-gray-400 hover:bg-gray-500 text-white font-semibold rounded-full shadow-md transition duration-300">Скасувати</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="editPetModal" class="fixed inset-0 flex items-center justify-center backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300 z-50 p-4">
+    <div id="editPetModalContent" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl scale-90 opacity-0 transition-all duration-300 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <form method="post" action="{% url 'user:profile' %}" enctype="multipart/form-data" id="editPetForm">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="edit_pet">
+            <input type="hidden" name="pet_id" id="editPetIdField" value=""> <h2 class="text-2xl font-semibold mb-6 text-center text-gray-800" id="editPetModalTitle">{{ edit_pet_action_title }}</h2>
+            
+            {% for field in edit_pet_form %}
+                 <div class="mb-4">
+                    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ field.label }}</label>
+                    {% if field.name == edit_pet_form.prefix|add:"-image" and field.value.url %}
+                        <div class="mb-2">
+                            <p class="text-xs text-gray-500">Поточне фото:</p>
+                            <img src="{{ field.value.url }}" alt="Current pet image" class="max-h-32 rounded border">
+                        </div>
+                    {% endif %}
+                    {{ field }}
+                     {% if field.name == edit_pet_form.prefix|add:"-image" %}
+                        {% endif %}
+                    {% if field.help_text %}
+                        <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p class="mt-1 text-xs text-red-500">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <div class="flex justify-center space-x-4 mt-8">
+                <button type="submit" class="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-full shadow-md hover:bg-indigo-700 transition duration-300 flex items-center justify-center text-sm">
+                    <i class="fas fa-save mr-2"></i>{{ edit_pet_submit_button_text }}
+                </button>
+                <button type="button" onclick="closeEditPetModal()" class="px-5 py-2.5 bg-gray-400 hover:bg-gray-500 text-white font-semibold rounded-full shadow-md transition duration-300">Скасувати</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="deletePetModal" class="fixed inset-0 flex items-center justify-center backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300 z-50 p-4">
+    <div id="deletePetModalContent" class="bg-white p-6 md:p-8 rounded-2xl shadow-2xl scale-90 opacity-0 transition-all duration-300 w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <form method="post" action="{% url 'user:profile' %}" id="deletePetForm">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="delete_pet">
+            <input type="hidden" name="pet_id_for_delete" id="deletePetIdField" value=""> <div class="text-center">
+                <i class="fas fa-exclamation-triangle text-red-500 text-5xl mb-4"></i>
+                <h2 class="text-2xl font-semibold mb-3">Підтвердження видалення</h2>
+                <p class="text-gray-600 mb-6">Ви дійсно хочете видалити улюбленця <strong id="deletePetNameConfirm"></strong>? Цю дію не можна буде скасувати.</p>
+            </div>
+            <div class="flex justify-center space-x-4 mt-6">
+                <button type="submit" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-full shadow-md transition duration-300">Так, видалити</button>
+                <button type="button" onclick="closeDeletePetModal()" class="px-5 py-2.5 bg-gray-400 hover:bg-gray-500 text-white font-semibold rounded-full shadow-md transition duration-300">Скасувати</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 <div id="previewModal" class="fixed inset-0 flex items-center justify-center backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300 z-50">
     <div id="modalContent" class="bg-white p-6 rounded-2xl shadow-2xl scale-90 opacity-0 transition-all duration-300 w-auto min-w-[300px]">
         <h2 class="text-lg font-semibold mb-4 text-center">Попередній перегляд</h2>
         <img id="previewImage" src="" alt="Preview" class="w-32 h-32 mx-auto rounded-full object-cover mb-6 border-4 border-gray-200">
         <div class="flex justify-center space-x-4">
-            <button onclick="confirmAvatar()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full flex items-center transition duration-300">
+            <button onclick="confirmAvatar()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-full flex items-center shadow-md
+            transition duration-300">
                 <i class="fas fa-check mr-2"></i>Підтвердити
             </button>
-            <button onclick="cancelAvatar()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-full flex items-center transition duration-300">
+            <button onclick="cancelAvatar()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-full flex items-center shadow-md
+            transition duration-300">
                 <i class="fas fa-times mr-2"></i>Скасувати
             </button>
         </div>
     </div>
 </div>
 
-<div id="deleteModal" class="fixed inset-0 flex items-center justify-center backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300 z-50">
-    <div id="deleteModalContent" class="bg-white p-8 rounded-2xl shadow-2xl scale-90 opacity-0 transition-all duration-300 w-[90vw] max-w-md">
-        <div class="text-center">
-            <i class="fas fa-exclamation-triangle text-red-500 text-5xl mb-4"></i>
-            <h2 class="text-2xl font-semibold mb-3">Підтвердження видалення</h2>
-            <p class="text-gray-600 mb-6">Ви дійсно хочете видалити свій профіль? Цю дію не можна буде скасувати.</p>
-        </div>
-        <div class="flex justify-center space-x-4 mt-6">
-            <button onclick="deleteProfile()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full flex items-center transition duration-300">
-                <i class="fas fa-trash-alt mr-2"></i>Так, видалити
-            </button>
-            <button onclick="closeDeleteModal()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full flex items-center transition duration-300">
-                <i class="fas fa-ban mr-2"></i>Скасувати
-            </button>
-        </div>
+<div id="DeleteModal" class="fixed inset-0 flex items-center justify-center backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300 z-50 p-4">
+    <div id="DeleteModalContent" class="bg-white p-8 rounded-2xl shadow-2xl scale-90 opacity-0 transition-all duration-300 w-[90vw] max-w-md">
+        <form method="post" action="{% url 'user:delete_profile' %}" id="userDeleteForm">
+            {% csrf_token %}
+            <div class="text-center">
+                <i class="fas fa-exclamation-triangle text-red-500 text-5xl mb-4"></i>
+                <h2 class="text-2xl font-semibold mb-3">Підтвердження видалення</h2>
+                <p class="text-gray-600 mb-6">Ви дійсно хочете видалити свій профіль? Усі ваші дані, включаючи інформацію про улюбленців, будуть остаточно видалені. Цю дію не можна буде скасувати.</p>
+            </div>
+            <div class="flex justify-center space-x-4 mt-6">
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full flex items-center transition duration-300">
+                    <i class="fas fa-trash-alt mr-2"></i>Так, видалити
+                </button>
+                <button type="button" onclick="closeUserDeleteModal()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-full flex items-center transition duration-300">
+                    <i class="fas fa-ban mr-2"></i>Скасувати
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -136,7 +280,8 @@
                         <div class="relative">
                             <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-user text-gray-400"></i></div>
                             <input id="editLogin" name="username" type="text" placeholder="Введіть логін" value="{{ form.username.value|default:user.username }}"
-                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm" required>
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300
+                                   sm:text-sm transition duration-150 ease-in-out text-sm" required>
                         </div>
                     </div>
                     <div>
@@ -144,7 +289,8 @@
                         <div class="relative">
                             <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-envelope text-gray-400"></i></div>
                             <input id="editEmail" name="email" type="email" placeholder="Введіть електронну пошту" value="{{ form.email.value|default:user.email }}"
-                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm" required>
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300
+                                   sm:text-sm transition duration-150 ease-in-out text-sm" required>
                         </div>
                     </div>
                     <div>
@@ -152,7 +298,8 @@
                         <div class="relative">
                             <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-phone text-gray-400"></i></div>
                             <input id="editPhone" name="phone_number" type="tel" placeholder="Введіть номер телефону" value="{{ user.phone_number|default:'' }}"
-                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300
+                                   sm:text-sm transition duration-150 ease-in-out text-sm">
                         </div>
                     </div>
                     <div>
@@ -160,7 +307,8 @@
                         <div class="relative">
                             <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-lock text-gray-400"></i></div>
                             <input id="newPassword" name="new_password" type="password" placeholder="Введіть новий пароль"
-                                   class="w-full pl-10 pr-12 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
+                                   class="w-full pl-10 pr-12 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300
+                                   sm:text-sm transition duration-150 ease-in-out text-sm">
                             <button type="button" onclick="togglePasswordVisibility('newPassword', this)" class="absolute inset-y-0 right-3 flex items-center 
                             text-gray-400 hover:text-indigo-500 transition"><i class="fas fa-eye-slash"></i></button>
                         </div>
@@ -170,7 +318,8 @@
                         <div class="relative">
                             <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-lock text-gray-400"></i></div>
                             <input id="confirmPassword" name="confirm_password" type="password" placeholder="Підтвердіть новий пароль"
-                                   class="w-full pl-10 pr-12 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
+                                   class="w-full pl-10 pr-12 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300
+                                   sm:text-sm transition duration-150 ease-in-out text-sm">
                             <button type="button" onclick="togglePasswordVisibility('confirmPassword', this)" class="absolute inset-y-0 right-3 flex items-center 
                             text-gray-400 hover:text-indigo-500 transition"><i class="fas fa-eye-slash"></i></button>
                         </div>
@@ -183,7 +332,8 @@
                         <div class="relative">
                             <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-id-card text-gray-400"></i></div>
                             <input id="editFirstName" name="first_name" type="text" placeholder="Введіть ім'я" value="{{ form.first_name.value|default:user.first_name }}"
-                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm" required>
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300
+                                   sm:text-sm transition duration-150 ease-in-out text-sm" required>
                         </div>
                     </div>
                     <div>
@@ -191,7 +341,8 @@
                         <div class="relative">
                             <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-id-card text-gray-400"></i></div>
                             <input id="editLastName" name="last_name" type="text" placeholder="Введіть прізвище" value="{{ form.last_name.value|default:user.last_name }}"
-                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm" required>
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300
+                                   sm:text-sm transition duration-150 ease-in-out text-sm" required>
                         </div>
                     </div>
                     <div>
@@ -199,41 +350,45 @@
                         <div class="relative">
                             <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-id-card text-gray-400"></i></div>
                             <input id="editMiddleName" name="middle_name" type="text" placeholder="Введіть по батькові" value="{{ user.middle_name|default:'' }}"
-                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300
+                                   sm:text-sm transition duration-150 ease-in-out text-sm">
                         </div>
                     </div>
                     <div>
                         <label for="editCity" class="block text-sm font-medium text-gray-700 mb-1">Країна</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-planet text-gray-400"></i></div>
+                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-city text-gray-400"></i></div>
                             <input id="editCity" name="city" type="text" placeholder="Введіть країну" value="{{ user.city|default:'' }}"
-                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300
+                                   sm:text-sm transition duration-150 ease-in-out text-sm">
                         </div>
                     </div>
                     <div>
                         <label for="editAddress" class="block text-sm font-medium text-gray-700 mb-1">Адреса</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-location-dot text-gray-400"></i></div>
+                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-map-marker-alt text-gray-400"></i></div>
                             <input id="editAddress" name="address" type="text" placeholder="Введіть адресу" value="{{ user.address|default:'' }}"
-                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300
+                                   sm:text-sm transition duration-150 ease-in-out text-sm">
                         </div>
                     </div>
                     <div>
                         <label for="editPostal" class="block text-sm font-medium text-gray-700 mb-1">Поштовий індекс</label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-location-dot text-gray-400"></i></div>
+                            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-mail-bulk text-gray-400"></i></div>
                             <input id="editPostal" name="postal_code" type="text" placeholder="Введіть поштовий індекс" value="{{ user.postal_code|default:'' }}"
-                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-300 focus:border-indigo-500 focus:outline-none transition text-sm">
+                                   class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300
+                                   sm:text-sm transition duration-150 ease-in-out text-sm">
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="flex justify-center space-x-4 mt-8">
-                <button type="submit" onclick="return preSubmitValidation(event)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-full flex items-center transition duration-300">
-                    <i class="fas fa-save mr-2"></i>Зберегти
+                <button type="submit" onclick="return preSubmitValidation(event)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 px-6 rounded-full flex items-center shadow-md transition duration-300">
+                    <i class="fas fa-save mr-2"></i>Зберегти зміни
                 </button>
-                <button type="button" onclick="closeEditModal()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2.5 px-6 rounded-full flex items-center transition duration-300">
+                <button type="button" onclick="closeEditModal()" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2.5 px-6 rounded-full flex items-center shadow-md transition duration-300">
                     <i class="fas fa-times mr-2"></i>Скасувати
                 </button>
             </div>
@@ -248,6 +403,13 @@
     }
     .animate-fade-in {
       animation: fade-in 0.8s ease-out;
+    }
+        .form-field-error input, .form-field-error textarea, .form-field-error select {
+        border-color: #f56565;
+    }
+    .form-field-error .error-text {
+        color: #c53030;
+        font-size: 0.75rem;
     }
 </style>
 
@@ -294,13 +456,20 @@
         }, 300);
     }
 
-    function confirmAvatar() {
-        if (tempAvatarData) {
-            document.getElementById('currentAvatar').src = tempAvatarData;
-            console.log("Аватар візуально оновлено. Файл буде завантажено при збереженні форми.");
+function confirmAvatar() {
+    if (tempAvatarData) {
+        document.getElementById('currentAvatar').src = tempAvatarData;
+        console.log("Аватар візуально оновлено. Надсилаю форму для збереження.");
+    
+        const profileForm = document.getElementById('profileEditForm'); 
+        
+        if (profileForm) {
+            profileForm.submit(); 
+        } else {
+            console.error("Головна форма профілю ('profileEditForm') не знайдена!");
         }
-        closePreviewModal();
     }
+}
 
     function cancelAvatar() {
         tempAvatarData = '';
@@ -392,31 +561,29 @@
     }
 
     function openDeleteModal() {
-        const modal = document.getElementById('deleteModal');
-        const content = document.getElementById('deleteModalContent');
-        modal.classList.remove('pointer-events-none', 'opacity-0');
-        modal.classList.add('opacity-100');
-        setTimeout(() => {
-            content.classList.remove('scale-90', 'opacity-0');
-            content.classList.add('scale-100', 'opacity-100');
-        }, 50);
+        const modal = document.getElementById('DeleteModal');
+        const content = document.getElementById('DeleteModalContent');
+        if (modal && content) {
+            modal.classList.remove('pointer-events-none', 'opacity-0');
+            modal.classList.add('opacity-100');
+            setTimeout(() => {
+                content.classList.remove('scale-90', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 50);
+        }
     }
 
     function closeDeleteModal() {
-        const modal = document.getElementById('deleteModal');
-        const content = document.getElementById('deleteModalContent');
-        content.classList.remove('scale-100', 'opacity-100');
-        content.classList.add('scale-90', 'opacity-0');
-        setTimeout(() => {
-            modal.classList.remove('opacity-100');
-            modal.classList.add('opacity-0', 'pointer-events-none');
-        }, 300);
-    }
-
-    function deleteProfile() {
-        console.log("Запит на видалення профілю (потрібна реалізація на сервері).");
-        alert("Функція видалення профілю потребує серверної реалізації. Наприклад, перенаправлення на URL для видалення.");
-        closeDeleteModal();
+        const modal = document.getElementById('DeleteModal');
+        const content = document.getElementById('DeleteModalContent');
+        if (modal && content) {
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-90', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.remove('opacity-100');
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            }, 300);
+        }
     }
 
     function togglePasswordVisibility(inputId, button) {
@@ -450,6 +617,95 @@
             icon.classList.add("fa-eye-slash");
         }
     }
+
+    function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        const content = document.getElementById(modalId + 'Content');
+        if (!modal || !content) return;
+        modal.classList.remove('pointer-events-none', 'opacity-0');
+        modal.classList.add('opacity-100');
+        setTimeout(() => {
+            content.classList.remove('scale-90', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 50);
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        const content = document.getElementById(modalId + 'Content');
+        if (!modal || !content) return;
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-90', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }, 300);
+    }
+
+    function openAddPetModal() {
+        const form = document.getElementById('addPetForm');
+        if (form) form.reset();
+        openModal('addPetModal');
+    }
+    function closeAddPetModal() {
+        closeModal('addPetModal');
+    }
+
+    function openEditPetModal(petId, petName, petImageUrl, ageYears, ageMonths, weight, species, breed, healthFeatures) {
+        const form = document.getElementById('editPetForm');
+        if (!form) return;
+
+        document.getElementById('editPetIdField').value = petId;
+        document.getElementById('editPetModalTitle').innerText = `Редагувати дані: ${petName}`;
+
+        const prefix = '{{ edit_pet_form.prefix }}';
+        
+        document.getElementById(`id_${prefix}-name`).value = petName;
+        const currentImagePreview = form.querySelector(`#id_${prefix}-image_preview_area`);
+        if (currentImagePreview) {
+        }
+
+        document.getElementById(`id_${prefix}-age_years`).value = ageYears || '';
+        document.getElementById(`id_${prefix}-age_months`).value = ageMonths || '';
+        document.getElementById(`id_${prefix}-weight`).value = weight || '';
+        document.getElementById(`id_${prefix}-species`).value = species || '';
+        document.getElementById(`id_${prefix}-breed`).value = breed || '';
+        document.getElementById(`id_${prefix}-health_features`).value = healthFeatures || '';
+        
+        openModal('editPetModal');
+    }
+    function closeEditPetModal() {
+        closeModal('editPetModal');
+    }
+
+    function openDeletePetModal(petId, petName) {
+        document.getElementById('deletePetIdField').value = petId;
+        document.getElementById('deletePetNameConfirm').innerText = petName;
+        openModal('deletePetModal');
+    }
+    function closeDeletePetModal() {
+        closeModal('deletePetModal');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const addPetFormErrors = {{ add_pet_form.errors|yesno:"true,false" }};
+        const editPetFormErrors = {{ edit_pet_form.errors|yesno:"true,false" }};
+        const editingPetIdOnError = "{{ editing_pet_id_on_error|default:'' }}";
+
+        if (addPetFormErrors) {
+            openAddPetModal();
+        }
+        
+        if (editPetFormErrors && editingPetIdOnError) {
+            const editButton = document.querySelector(`button[onclick*="openEditPetModal('${editingPetIdOnError}'"]`);
+            if (editButton) {
+                document.getElementById('editPetIdField').value = editingPetIdOnError;
+                const petNameForTitle = document.getElementById(`id_${'{{ edit_pet_form.prefix }}'}-name`).value || "улюбленця";
+                document.getElementById('editPetModalTitle').innerText = `Редагувати дані: ${petNameForTitle} (виправте помилки)`;
+                openModal('editPetModal');
+            }
+        }
+    });
 </script>
 
 {% endblock content %}

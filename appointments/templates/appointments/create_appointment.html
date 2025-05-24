@@ -36,14 +36,14 @@
                     </label>
                     {{ field }}
                     {% if field.help_text %}
-                    <p class="mt-2 text-xs text-gray-500">{{ field.help_text|safe }}</p>
+                        <p class="mt-2 text-xs text-gray-500">{{ field.help_text|safe }}</p>
                     {% endif %}
                     {% if field.errors %}
-                    <div class="mt-1.5">
+                        <div class="mt-1.5">
                         {% for error in field.errors %}
-                        <p class="text-xs text-red-600">{{ error }}</p>
+                            <p class="text-xs text-red-600">{{ error }}</p>
                         {% endfor %}
-                    </div>
+                        </div>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -65,4 +65,25 @@
         </div>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dateTimeField = document.getElementById('{{ form.requested_datetime.id_for_label }}');
+
+    if (dateTimeField && dateTimeField.type === 'datetime-local') {
+        const now = new Date();
+        
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        
+        const minDateTimeString = `${year}-${month}-${day}T${hours}:${minutes}`;
+        
+        dateTimeField.setAttribute('min', minDateTimeString);
+    }
+});
+</script>
+
 {% endblock content %}

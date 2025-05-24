@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils import timezone
 from django.urls import reverse
 from .models import Appointment
 from .forms import AppointmentForm
@@ -13,12 +14,16 @@ def create_appointment(request, service_slug):
     if request.method == 'POST':
         form = AppointmentForm(request.POST)
         if form.is_valid():
-            appointment = form.save(commit=False)
-            appointment.user = request.user
-            appointment.service = service
-            appointment.save()
-            messages.success(request, f"Ваш запит на послугу «{service.name}» прийнято! Ми зв'яжемося з вами для підтвердження.")
-            return redirect('appointments:appointment_history')
+            chosen_datetime = form.cleaned_data.get('appointment_datetime')
+            if chosen_datetime and chosen_datetime < timezone.now():
+                messages.error(request, "Неможливо створити запис на минулий час.")
+            else:
+                appointment = form.save(commit=False)
+                appointment.user = request.user
+                appointment.service = service
+                appointment.save()
+                messages.success(request, f"Ваш запит на послугу «{service.name}» прийнято! Ми зв'яжемося з вами для підтвердження.")
+                return redirect('appointments:appointment_history')
     else:
         form = AppointmentForm()
 

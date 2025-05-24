@@ -44,6 +44,8 @@ class Cart:
         for item in cart.values():
             item['price'] = Decimal(item['price'])
             item['total_price'] = item['price'] * item['quantity']
+            item['line_total'] = (Decimal(item['price']) - (Decimal(item['price']) \
+            * Decimal(item['product'].discount / 100))) * item['quantity']
             yield item
 
 

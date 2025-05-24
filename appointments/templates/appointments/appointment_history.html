@@ -20,7 +20,7 @@
                             <div class="flex-grow mb-4 sm:mb-0 sm:mr-6">
                                 <p class="text-lg font-semibold text-indigo-700 hover:text-indigo-800 transition">{{ appointment.service.name }}</p>
                                 <p class="text-sm text-gray-600 mt-1">
-                                    <i class="far fa-calendar-alt fa-fw text-gray-400 mr-1.5"></i> Бажаний час: {{ appointment.requested_datetime|date:"d F Y, H:i" }}
+                                    <i class="far fa-calendar-alt fa-fw text-gray-400 mr-1.5"></i> Бажаний час: {{ appointment.requested_datetime|date:"d M Y, H:i" }}
                                 </p>
                                 <p class="text-xs text-gray-500 mt-0.5">
                                     <i class="far fa-clock fa-fw text-gray-400 mr-1.5"></i> Запит створено: {{ appointment.created_at|date:"d M Y, H:i" }}

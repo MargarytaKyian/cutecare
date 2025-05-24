@@ -267,7 +267,7 @@
                       <form action="{% url 'main:submit_review' product.id %}" method="POST" class="space-y-4">
                           {% csrf_token %}
                           <div>
-                              <label class="block text-xs font-medium text-gray-700 mb-1">Ваша оцінка</label>
+                              <label class="block text-sm font-medium text-gray-700 mb-1">Ваша оцінка</label>
                               <div class="flex space-x-1 text-xl sm:text-2xl text-gray-300">
                                   <template x-for="star in 5" :key="star">
                                       <button type="button" @click="rating = star" @mouseover="hoverRating = star" @mouseleave="hoverRating = 0"
@@ -281,17 +281,19 @@
                           </div>
 
                           <div>
-                              <label for="review-title" class="block text-xs font-medium text-gray-700 mb-1">Заголовок відгуку</label>
+                              <label for="review-title" class="block text-sm font-medium text-gray-700 mb-1">Заголовок відгуку</label>
                               <input type="text" name="subject" id="review-title"
-                                     class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-200 py-2 px-3"
+                                     class="w-full text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 
+                                     focus:ring-indigo-300 sm:text-sm transition duration-150 ease-in-out py-2 px-3"
                                      placeholder="Наприклад: Чудовий корм!">
                           </div>
 
                           <div>
-                              <label for="review-text-area" class="block text-xs font-medium text-gray-700 mb-1">Текст відгуку</label>
+                              <label for="review-text-area" class="block text-sm font-medium text-gray-700 mb-1">Текст відгуку</label>
                               <textarea id="review-text-area" name="review"
-                                        class="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-200 py-2 px-3 
-                                        resize-none min-h-[6rem] max-h-[12rem] overflow-y-auto"
+                                        class="w-full text-sm border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 
+                                        focus:ring-indigo-300 sm:text-sm transition duration-150 ease-in-out py-2 px-3 
+                                        resize-none min-h-[8rem] max-h-[16rem] overflow-y-auto"
                                         rows="3"
                                         placeholder="Поділіться своїми враженнями детальніше..." required></textarea>
                           </div>
@@ -338,9 +340,6 @@
                                                       <i class="far fa-star"></i>
                                                   {% endif %}
                                               {% endfor %}
-                                              {% if review_item.is_verified_purchase %}
-                                              <span class="ml-1.5 text-2xs text-green-600 font-medium bg-green-50 px-1 py-0.5 rounded hidden sm:inline-block"><i class="fas fa-check-circle mr-0.5"></i> Перевірений покупець</span>
-                                              {% endif %}
                                           </div>
                                           {% if review_item.subject %}
                                           <h5 class="text-sm sm:text-base font-medium text-gray-700 mb-1">{{ review_item.subject }}</h5>

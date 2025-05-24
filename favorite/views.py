@@ -17,7 +17,7 @@ def add_to_favorite(request, product_id):
         messages.success(request, f"Товар '{product.name}' додано до збережених.")
     else:
         messages.info(request, f"Товар '{product.name}' уже в збережених.")
-    return redirect(request.META.get('HTTP_REFERER', 'shop:product_list'))
+    return redirect(request.META.get('HTTP_REFERER', 'main:product_list'))
 
 @login_required
 def remove_from_favorite(request, product_id):

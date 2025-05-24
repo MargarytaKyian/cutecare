@@ -53,8 +53,6 @@
                                 </div>
 
                                 <div class="mt-4 sm:mt-0 sm:ml-auto flex flex-col items-center sm:items-end space-y-2">
-                                    <p class="text-lg sm:text-xl font-bold text-indigo-700">
-                                        {{ item.total_price|floatformat:0 }}₴ </p>
                                     <form action="{% url "cart:cart_remove" product.id %}" method="post" class="w-full sm:w-auto">
                                         {% csrf_token %}
                                         <button type="submit" class="w-full sm:w-auto text-xs text-red-500 hover:text-red-700 font-medium py-1 px-2 rounded-md hover:bg-red-50 transition-colors duration-150 flex items-center justify-center">

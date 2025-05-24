@@ -1,6 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.contrib import messages
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Order, OrderItem
 from .forms import OrderCreateForm
@@ -34,6 +37,32 @@ def order_create(request):
                   {'cart': cart,
                    'form': form,
                    'has_any_discount_in_cart': has_any_discount_in_cart})
+
+
+@require_POST
+def remove_order_item(request, order_item_id):
+    order_item = get_object_or_404(OrderItem, id=order_item_id)
+    current_order = order_item.order
+    order_id_in_session = request.session.get('order_id')
+    
+    can_modify = False
+    if request.user.is_authenticated and current_order.user == request.user:
+        can_modify = True
+    elif not current_order.user and current_order.id == order_id_in_session:
+        can_modify = True
+
+    if not can_modify:
+        messages.error(request, "У вас немає прав для зміни цього замовлення.")
+        return redirect(reverse('main:product_list'))
+
+    product_name = order_item.product.name
+    order_item.delete()
+    
+    messages.success(request, f'Товар "{product_name}" було успішно видалено з вашого замовлення.')
+
+    if not current_order.items.exists():
+        messages.info(request, "Ваше замовлення тепер порожнє. Можливо, ви захочете його скасувати або додати нові товари.")
+    return redirect(reverse('payment:process'))
 
 
 @login_required

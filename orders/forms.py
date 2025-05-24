@@ -5,13 +5,14 @@ from .models import Order
 class OrderCreateForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['user', 'first_name', 'last_name', 'middle_name', 'email',
-                    'phone_number','address', 'postal_code', 'city']
+        fields = ['first_name', 'last_name', 'middle_name', 'email',
+                    'phone_number', 'city', 'address', 'postal_code']
     
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
+
         if self.request.user.is_authenticated:
             self.initial['first_name'] = self.request.user.first_name
             self.initial['last_name'] = self.request.user.last_name
@@ -20,7 +21,10 @@ class OrderCreateForm(forms.ModelForm):
 
     def save(self, commit=True):
         order = super().save(commit=False)
-        order.user = self.request.user
+        if self.request and self.request.user.is_authenticated:
+            order.user = self.request.user
+        else:
+            order.user = None 
         if commit:
             order.save()
         return order
