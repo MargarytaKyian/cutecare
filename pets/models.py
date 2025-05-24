@@ -26,8 +26,17 @@ class Pet(models.Model):
         validators=[MinValueValidator(0.01)]
     )
 
+    class GenderChoices(models.TextChoices):
+        MALE = 'Самець', 'Самець'
+        FEMALE = 'Самиця', 'Самиця'
+        UNKNOWN = 'Невідомо', 'Невідомо'
+
+    gender = models.CharField(max_length=10, choices=GenderChoices.choices,
+                              blank=False, null=True, verbose_name='Стать')
+
     species = models.CharField(max_length=100, verbose_name='Вид тварини', help_text='Наприклад: Собака, Кіт, Папуга')
     breed = models.CharField(max_length=100, blank=True, null=True, verbose_name='Порода')
+
     health_features = models.TextField(blank=True, null=True, verbose_name='Особливості здоров\'я та характеру')
     
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата додавання')

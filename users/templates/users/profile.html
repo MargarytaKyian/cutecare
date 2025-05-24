@@ -79,7 +79,16 @@
                                     {% endif %}
                                     <div class="absolute top-3 right-3 flex space-x-2">
                                         <button type="button" 
-                                           onclick="openEditPetModal('{{ pet_instance.id }}', '{{ pet_instance.name|escapejs }}', '{% if pet_instance.image %}{{ pet_instance.image.url }}{% endif %}', '{{ pet_instance.age_years|default_if_none:'' }}', '{{ pet_instance.age_months|default_if_none:'' }}', '{{ pet_instance.weight|default_if_none:''|stringformat:".2f" }}', '{{ pet_instance.species|escapejs }}', '{{ pet_instance.breed|default_if_none:''|escapejs }}', '{{ pet_instance.health_features|default_if_none:''|escapejs }}')"
+                                           onclick="openEditPetModal('{{ pet_instance.id }}',
+                                           '{{ pet_instance.name|escapejs }}',
+                                           '{% if pet_instance.image %}{{ pet_instance.image.url }}{% endif %}',
+                                           '{{ pet_instance.age_years|default_if_none:'' }}',
+                                           '{{ pet_instance.age_months|default_if_none:'' }}',
+                                           '{{ pet_instance.weight|default_if_none:''|stringformat:".2f" }}',
+                                           '{{ pet_instance.gender|default_if_none:"" }}',
+                                           '{{ pet_instance.species|escapejs }}',
+                                           '{{ pet_instance.breed|default_if_none:''|escapejs }}',
+                                           '{{ pet_instance.health_features|default_if_none:''|escapejs }}')"
                                            title="Редагувати {{ pet_instance.name }}"
                                            class="bg-white/80 backdrop-blur-sm text-indigo-600 hover:bg-indigo-600 hover:text-white p-2 rounded-full shadow-md transition-colors duration-200">
                                             <i class="fas fa-pencil-alt fa-sm"></i>
@@ -97,7 +106,8 @@
                                     <p class="text-sm text-gray-500 mb-2">{{ pet_instance.species }}{% if pet_instance.breed %} <span class="text-gray-400">•</span> {{ pet_instance.breed }}{% endif %}</p>
                                     <div class="text-sm text-gray-600 space-y-1 mb-3 flex-grow">
                                         <p><i class="fas fa-birthday-cake fa-fw mr-2 text-indigo-400 opacity-80"></i><strong>Вік:</strong> {{ pet_instance.get_age_display }}</p>
-                                        <p><i class="fas fa-weight-hanging fa-fw mr-2 text-teal-500 opacity-80"></i><strong>Вага:</strong> {{ pet_instance.get_weight_display }}</p>
+                                        <p><i class="fas fa-weight-hanging fa-fw mr-2 text-yellow-500 opacity-80"></i><strong>Вага:</strong> {{ pet_instance.get_weight_display }}</p>
+                                        <p><i class="fas fa-venus-mars fa-fw mr-2 text-teal-500 opacity-80"></i><strong>Стать:</strong> {{ pet_instance.gender }}</p>
                                         {% if pet_instance.health_features %}
                                             <p class="flex items-start"><i class="fas fa-notes-medical fa-fw mr-2 text-red-400 opacity-80 pt-1"></i>
                                                 <span><strong>Особливості:</strong> {{ pet_instance.health_features|truncatewords_html:10 }}</span></p>
@@ -651,7 +661,7 @@ function confirmAvatar() {
         closeModal('addPetModal');
     }
 
-    function openEditPetModal(petId, petName, petImageUrl, ageYears, ageMonths, weight, species, breed, healthFeatures) {
+    function openEditPetModal(petId, petName, petImageUrl, ageYears, ageMonths, weight, gender, species, breed, healthFeatures) {
         const form = document.getElementById('editPetForm');
         if (!form) return;
 
@@ -668,6 +678,7 @@ function confirmAvatar() {
         document.getElementById(`id_${prefix}-age_years`).value = ageYears || '';
         document.getElementById(`id_${prefix}-age_months`).value = ageMonths || '';
         document.getElementById(`id_${prefix}-weight`).value = weight || '';
+        document.getElementById(`id_${prefix}-gender`, gender);
         document.getElementById(`id_${prefix}-species`).value = species || '';
         document.getElementById(`id_${prefix}-breed`).value = breed || '';
         document.getElementById(`id_${prefix}-health_features`).value = healthFeatures || '';

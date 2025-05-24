@@ -1,28 +1,124 @@
 {% extends "main/base.html" %}
-{% block title %}Результати пошуку: “{{ query }}”{% endblock %}
+{% load static %}
+
+{% block title %}Результати пошуку: “{{ query }}” | CuteCare{% endblock title %}
 
 {% block content %}
-  <h1>Результати пошуку за “{{ query }}”</h1>
-
-  {% if products %}
-    <div class="row">
-      {% for product in products %}
-        <div class="col-md-4 mb-4">
-          <div class="card h-100">
-            <a href="{{ product.get_absolute_url }}">
-              {% if product.image %}
-                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
-              {% endif %}
-              <div class="card-body">
-                <h5 class="card-title">{{ product.name }}</h5>
-                <p class="card-text">{{ product.sell_price|floatformat:2 }} ₴</p>
-              </div>
-            </a>
-          </div>
-        </div>
-      {% endfor %}
+<section class="py-12 sm:py-16 bg-gradient-to-br from-indigo-100 via-white to-indigo-200 min-h-screen" data-aos="fade-in">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-10" data-aos="fade-down">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-indigo-600 tracking-tight">
+        Результати пошуку: “{{ query }}”
+      </h1>
     </div>
-  {% else %}
-    <p>За вашим запитом нічого не знайдено.</p>
-  {% endif %}
-{% endblock %}
+
+    {% if products %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for product in products %}
+            {% widthratio forloop.counter0 1 50 as base_delay %}
+            {% with current_aos_delay=base_delay|add:"50" %}
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden transition duration-300 ease-in-out hover:shadow-xl hover:-translate-y-1 flex flex-col" data-aos="fade-up" data-aos-delay="{{ current_aos_delay }}">
+                <div class="relative">
+                    <a href="{{ product.get_absolute_url }}">
+                        <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'img/noimage.jpg' %}{% endif %}" 
+                             alt="{{ product.name }}" 
+                             class="w-full h-56 object-cover">
+                    </a>
+                </div>
+                <div class="p-6 flex flex-col flex-grow">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-1">
+                        <a href="{{ product.get_absolute_url }}" class="hover:text-indigo-600 transition-colors">{{ product.name }}</a>
+                    </h3>
+                    
+                    <div class="flex items-center mb-2">
+                        {% if product.star_list %}
+                            {% for star_type in product.star_list %}
+                                {% if star_type == 'full' %}
+                                    <i class="fas fa-star text-yellow-400"></i>
+                                {% else %}
+                                    <i class="far fa-star text-gray-300"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="text-sm text-gray-500 ml-2">({{ product.avg_rating|floatformat:1 }})</span>
+                        {% else %}
+                            {% for i in "12345" %} <i class="far fa-star text-gray-300"></i> {% endfor %}
+                            <span class="text-sm text-gray-500 ml-2">(ще немає відгуків)</span>
+                        {% endif %}
+                    </div>
+
+                    <p class="text-gray-600 text-sm mb-4 flex-grow">
+                        {{ product.description|truncatewords:15|default:"Незабаром тут з'явиться опис товару." }}
+                    </p>
+                    
+                    <div class="mt-auto">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                {% if product.discount %}
+                                    <span class="text-gray-500 text-md line-through mr-1">{{ product.price|floatformat:0 }}₴</span>
+                                    <span class="text-indigo-600 text-xl font-bold">{{ product.sell_price|floatformat:0 }}₴</span>
+                                    {% if product.price and product.sell_price %}
+                                    <span class="ml-1.5 text-xs font-medium text-green-600 bg-green-100 px-1.5 py-0.5 rounded">
+                                        Знижка {{ product.discount|floatformat:0 }}%
+                                    </span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="text-indigo-600 text-xl font-bold">{{ product.price|floatformat:0 }}₴</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <form action="{% url 'cart:cart_add' product.id %}" method="post" class="flex-1">
+                                {% csrf_token %}
+                                <input type="hidden" name="quantity" value="1">
+                                
+                                {% if cart_product_form and cart_product_form.override %}
+                                  {{ cart_product_form.override }}
+                                {% endif %}
+                                
+                                <button type="submit" class="w-full text-center px-4 py-2 text-sm text-white bg-indigo-600 rounded-full hover:bg-indigo-700 transition duration-300 flex items-center justify-center cursor-pointer">
+                                    <i class="fas fa-shopping-cart mr-2"></i> У кошик
+                                </button>
+                            </form>
+                            
+                            {% if user.is_authenticated %}
+                                {% if product.is_favorited %}
+                                    <a href="{% url 'favorite:remove_from_favorite' product.id %}" class="px-3 py-2 text-sm text-white bg-rose-500 rounded-full hover:bg-rose-600 transition duration-300" title="Прибрати з бажань">
+                                        <i class="fas fa-heart"></i>
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'favorite:add_to_favorite' product.id %}" class="px-3 py-2 text-sm text-indigo-600 bg-indigo-100 rounded-full hover:bg-indigo-200 hover:text-indigo-700 transition duration-300" title="В бажання">
+                                        <i class="far fa-heart"></i>
+                                    </a>
+                                {% endif %}
+                            {% else %}
+                                <a href="{% url 'users:login' %}" class="px-3 py-2 text-sm text-indigo-600 bg-indigo-100 rounded-full hover:bg-indigo-200 hover:text-indigo-700 transition duration-300" title="Увійдіть, щоб зберегти">
+                                    <i class="far fa-heart"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+        {% endfor %}
+    </div>
+    {% else %}
+      <div class="text-center py-10" data-aos="fade-in">
+        <i class="fas fa-search text-5xl text-gray-400 mb-4"></i>
+        <p class="text-xl text-gray-700 font-semibold mb-2">За вашим запитом “{{ query }}” нічого не знайдено.</p>
+        <p class="text-gray-500">Спробуйте змінити пошуковий запит або перегляньте наш каталог.</p>
+        <div class="mt-6">
+            <a href="{% url 'main:product_list' %}"
+               class="inline-flex items-center justify-center px-6 py-2.5 border border-transparent rounded-full shadow-sm
+               text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2
+               focus:ring-offset-2 focus:ring-indigo-500 transition duration-200 ease-in-out">
+                <i class="fas fa-store mr-2"></i>
+                Перейти до каталогу
+            </a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock content %}

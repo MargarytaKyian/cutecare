@@ -184,7 +184,6 @@ def product_list(request, category_slug=None):
     return render(request, 'main/product/list.html', context)
 
 
-
 def popular_list(request):
     all_available_products = Product.objects.filter(available=True).annotate(
         calculated_avg_rating=Coalesce(
@@ -239,12 +238,48 @@ def autocomplete(request):
     ]
     return JsonResponse(data, safe=False)
 
+
 def product_search(request):
+    page = request.GET.get('page', 1)
     query = request.GET.get('q', '').strip()
-    products = Product.objects.filter(name__icontains=query, available=True) if query else Product.objects.none()
+
+    products_qs = Product.objects.filter(name__icontains=query, available=True) if query else Product.objects.none()
+
+    products_qs = products_qs.annotate(
+        avg_rating_val=Coalesce(
+            Avg('reviewrating__rating', filter=Q(reviewrating__status=True)),
+            Value(0.0),
+            output_field=FloatField()
+        ),
+        reviews_count_val=Count('reviewrating', filter=Q(reviewrating__status=True), distinct=True)
+    )
+
+    paginator = Paginator(products_qs, 6)
+    current_page_products = paginator.get_page(page)
+
+    for prod in current_page_products.object_list:
+        prod.avg_rating = prod.avg_rating_val
+        prod.reviews_count = prod.reviews_count_val
+
+        if prod.avg_rating is not None and prod.reviews_count > 0:
+            full_stars = int(round(prod.avg_rating))
+            full_stars = max(0, min(5, full_stars))
+            prod.star_list = ['full'] * full_stars + ['empty'] * (5 - full_stars)
+        else:
+            prod.star_list = ['empty'] * 5
+            prod.avg_rating = 0.0
+
+        prod.is_favorited = False
+        if request.user.is_authenticated:
+            if hasattr(request.user, 'favorites'):
+                prod.is_favorited = request.user.favorites.filter(product=prod).exists()
+
+    cart_product_form = CartAddProductForm()
+
     return render(request, 'main/product/search_results.html', {
-        'products': products,
-        'query': query
+        'products': current_page_products,
+        'query': query,
+        'cart_product_form': cart_product_form,
     })
 
 

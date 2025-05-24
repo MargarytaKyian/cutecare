@@ -6,20 +6,24 @@ class PetForm(forms.ModelForm):
         model = Pet
         fields = [
             'name', 'image', 
-            'age_years', 'age_months', 'weight',
-            'species', 'breed', 'health_features'
+            'age_years', 'age_months',
+            'weight', 'gender',
+            'species', 'breed',
+            'health_features',
         ]
         
         widgets = {
             'name': forms.TextInput(attrs={'class': 'w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 sm:text-sm transition duration-150 ease-in-out',
                                            'placeholder': 'Кличка вашого улюбленця'}),
-            'image': forms.ClearableFileInput(attrs={'class': 'w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100'}),
+            'image': forms.ClearableFileInput(attrs={'class': 'w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50'
+                                                    'file:text-indigo-700 hover:file:bg-indigo-100'}),
             'age_years': forms.NumberInput(attrs={'class': 'w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 sm:text-sm transition duration-150 ease-in-out',
                                                   'placeholder': 'Повних років', 'min': '0'}),
             'age_months': forms.NumberInput(attrs={'class': 'w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 sm:text-sm transition duration-150 ease-in-out',
                                                    'placeholder': 'Місяців (0-11)', 'min': '0', 'max': '11'}),
             'weight': forms.NumberInput(attrs={'class': 'w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 sm:text-sm transition duration-150 ease-in-out',
                                                'placeholder': 'Наприклад: 5.25', 'step': '0.01', 'min': '0.01'}),
+            'gender': forms.Select(attrs={'class': 'w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 sm:text-sm transition duration-150 ease-in-out'}),
             'species': forms.TextInput(attrs={'class': 'w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 sm:text-sm transition duration-150 ease-in-out',
                                               'placeholder': 'Наприклад: Собака, Кіт'}),
             'breed': forms.TextInput(attrs={'class': 'w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 sm:text-sm transition duration-150 ease-in-out',
@@ -34,6 +38,7 @@ class PetForm(forms.ModelForm):
             'age_years': 'Вік (повних років)',
             'age_months': 'Додатково місяців',
             'weight': 'Вага, кг (необов\'язково)',
+            'gender': 'Стать',
             'species': 'Вид тварини',
             'breed': 'Порода (необов\'язково)',
             'health_features': 'Особливості здоров\'я та характеру (необов\'язково)',
@@ -42,6 +47,7 @@ class PetForm(forms.ModelForm):
             'age_years': 'Вкажіть кількість повних років.',
             'age_months': 'Якщо вік менше року, вкажіть кількість місяців (0-11).',
             'weight': 'Вкажіть вагу в кілограмах (наприклад, 0.5 для 500г, або 5.25 для 5кг 250г).',
+            'gender': 'Оберіть стать вашого улюбленця.',
         }
 
     def clean_weight(self):

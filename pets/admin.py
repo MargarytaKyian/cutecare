@@ -3,9 +3,10 @@ from .models import Pet
 
 @admin.register(Pet)
 class PetAdmin(admin.ModelAdmin):
-    list_display = ('name', 'owner', 'species', 'get_weight_display_admin',
+    list_display = ('name', 'owner', 'species',
+                    'gender', 'get_weight_display_admin',
                     'get_age_display', 'created_at')
-    list_filter = ('species', 'owner', 'created_at')
+    list_filter = ('species', 'gender', 'owner', 'created_at')
     search_fields = ('name', 'breed', 'owner__username', 'owner__email')
     raw_id_fields = ('owner',)
     readonly_fields = ('created_at', 'updated_at')
@@ -14,7 +15,8 @@ class PetAdmin(admin.ModelAdmin):
             'fields': ('owner', 'name', 'image')
         }),
         ('Деталі улюбленця', {
-            'fields': ('species', 'breed', ('age_years', 'age_months'),
+            'fields': ('species', 'gender', 'breed',
+                       ('age_years', 'age_months'),
                        'weight', 'health_features')
         }),
         ('Дати', {
