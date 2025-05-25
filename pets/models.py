@@ -85,7 +85,3 @@ class Pet(models.Model):
                 return f"{normalized_weight.to_integral_value()} кг"
             return f"{normalized_weight} кг"
         return "Вагу не вказано"
-
-    # Опціонально: URL для перегляду деталей конкретного улюбленця (якщо плануєте окрему сторінку)
-    # def get_absolute_url(self):
-    #     return reverse('pets:pet_detail', kwargs={'pk': self.pk})

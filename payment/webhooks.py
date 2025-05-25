@@ -36,5 +36,4 @@ def stripe_webhook(request):
             except Order.DoesNotExist:
                 return HttpResponse("Order not found", status=404)
 
-    # Повертаємо 200 для всіх івентів
     return HttpResponse("Webhook received", status=200)

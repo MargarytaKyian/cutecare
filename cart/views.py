@@ -19,7 +19,7 @@ def cart_add(request, product_id):
                  quantity=cd['quantity'],
                  override_quantity=cd['override'])
         
-    return redirect(request.META.get('HTTP_REFERER', 'cart:cart_detail'))
+    return redirect('cart:cart_detail')
 
 
 @require_POST

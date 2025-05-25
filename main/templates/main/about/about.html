@@ -1,0 +1,238 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Про CuteCare{% endblock %}
+
+{% block content %}
+
+<section class="relative bg-gradient-to-br from-indigo-700 via-purple-800 to-indigo-900 text-white py-20 sm:py-28 lg:py-32 overflow-hidden">
+    <div class="absolute inset-0 opacity-10 mix-blend-overlay">
+        <svg class="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" fill="currentColor" aria-hidden="true">
+            <path d="M0 100 C40 0 60 0 100 100 Z"></path>
+            <path d="M0 0 C40 100 60 100 100 0 Z" opacity="0.5"></path>
+        </svg>
+    </div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-shadow-md" data-aos="fade-up">Про Проєкт "CuteCare"</h1>
+            <p class="mt-6 text-lg sm:text-xl max-w-3xl mx-auto text-indigo-100 text-shadow" data-aos="fade-up" data-aos-delay="100">
+                Інноваційний веб-застосунок для власників домашніх улюбленців.
+            </p>
+            <div class="mt-10" data-aos="fade-up" data-aos-delay="200">
+                <a href="#features" class="inline-block px-8 py-3 text-lg font-semibold text-indigo-700 bg-white rounded-full shadow-lg 
+                hover:bg-gray-100 transition duration-300 transform hover:scale-105">
+                    <i class="fas fa-cogs mr-2"></i> Дізнатись більше про технології
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-16 bg-white overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-3xl font-bold text-indigo-600">Суть Проєкту</h2>
+            <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">
+                "CuteCare" – це дипломний проєкт на тему <strong class="text-indigo-700">"Веб-застосунок автоматизованих ветеринарних консультацій"</strong>.
+                Його мета – надати комплексну платформу, що поєднує зручність електронної комерції зоотоварів та доступність первинних ветеринарних порад.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
+            <div data-aos="fade-right" data-aos-delay="100">
+                <img src="{% static 'img/examp.jpg' %}" alt="Платформа CuteCare" class="rounded-xl shadow-xl w-full">
+            </div>
+            <div data-aos="fade-left" data-aos-delay="200">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-4">Ключові напрямки:</h3>
+                <ul class="space-y-4 text-gray-700">
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-shopping-cart text-indigo-600"></i>
+                        </div>
+                        <span><strong>Електронна комерція:</strong> Широкий асортимент зоотоварів з можливістю безпечної онлайн-оплати через платіжну систему <strong class="text-indigo-700">Stripe</strong>.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0 h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-robot text-purple-600"></i>
+                        </div>
+                        <span><strong>AI-Консультації:</strong> Автоматизовані ветеринарні консультації на базі штучного інтелекту <strong class="text-purple-700">Gemini</strong>, що допоможуть отримати швидкі поради.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <div class="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-paw text-indigo-600"></i>
+                        </div>
+                        <span><strong>Комплексний догляд:</strong> Поєднання продажу товарів та надання інформаційної підтримки для всебічної турботи про домашніх тварин.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-16 bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-3xl font-bold text-indigo-500">Про Автора Проєкту</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+            <div class="md:col-span-1 flex justify-center" data-aos="zoom-in">
+                <img src="{% static 'img/ph1.jpg' %}" alt="Фото Маргарити Киян" class="rounded-full shadow-xl w-48 h-48 sm:w-60 sm:h-60 object-cover">
+            </div>
+            <div class="md:col-span-2" data-aos="fade-left" data-aos-delay="100">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-3">Киян Маргарита Сергіївна</h3>
+                <p class="text-gray-700 text-lg mb-2">Студентка 4 курсу, групи 407-ІПЗ.</p>
+                <p class="text-gray-600 mb-4">
+                    Навчається в <strong class="text-indigo-700">Фаховому коледжі інженерії, управління та землевпорядкування</strong> Державного некомерційного підприємства "Державний університет "Київський авіаційний інститут"".
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-16 bg-white" id="features">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-3xl font-bold text-indigo-600">Технології та Інструменти</h2>
+            <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">
+                Проєкт реалізовано з використанням сучасних веб-технологій для забезпечення надійності, швидкості та зручності користування.
+            </p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-gray-50 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col" data-aos="fade-up" data-aos-delay="50">
+                <div class="flex items-center mb-3">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                        <i class="fab fa-python text-green-600 text-xl"></i>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900">Python & Django</h4>
+                </div>
+                <p class="text-gray-600 text-sm flex-grow">
+                    Серверна частина розроблена на Python з використанням фреймворку Django, що забезпечує швидку розробку та надійну архітектуру.
+                </p>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col" data-aos="fade-up" data-aos-delay="100">
+                <div class="flex items-center mb-3">
+                     <div class="flex-shrink-0 h-10 w-10 rounded-full bg-sky-100 flex items-center justify-center mr-3">
+                        <i class="fas fa-wind text-sky-600 text-xl"></i> </div>
+                    <h4 class="text-lg font-semibold text-gray-900">Tailwind CSS</h4>
+                </div>
+                <p class="text-gray-600 text-sm flex-grow">
+                    Адаптивний та сучасний інтерфейс користувача створено за допомогою Tailwind CSS для гнучкого та швидкого стилювання.
+                </p>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col" data-aos="fade-up" data-aos-delay="150">
+                <div class="flex items-center mb-3">
+                     <div class="flex-shrink-0 h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center mr-3">
+                        <i class="fas fa-mountain text-yellow-600 text-xl"></i> </div>
+                    <h4 class="text-lg font-semibold text-gray-900">Alpine.js</h4>
+                </div>
+                <p class="text-gray-600 text-sm flex-grow">
+                    Для створення легкої клієнтської інтерактивності та динамічних компонентів використовується мінімалістичний JavaScript фреймворк Alpine.js.
+                </p>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col" data-aos="fade-up" data-aos-delay="200">
+                <div class="flex items-center mb-3">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
+                        <i class="fab fa-stripe-s text-indigo-600 text-xl"></i>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900">Stripe API</h4>
+                </div>
+                <p class="text-gray-600 text-sm flex-grow">
+                    Інтеграція з Stripe API для безпечної та надійної обробки онлайн-платежів за товари.
+                </p>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col" data-aos="fade-up" data-aos-delay="250">
+                <div class="flex items-center mb-3">
+                     <div class="flex-shrink-0 h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                        <i class="fas fa-brain text-purple-600 text-xl"></i>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900">Gemini API</h4>
+                </div>
+                <p class="text-gray-600 text-sm flex-grow">
+                    Використання Gemini API для реалізації функціоналу AI-чатбота, що надає ветеринарні консультації.
+                </p>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col" data-aos="fade-up" data-aos-delay="300">
+                <div class="flex items-center mb-3">
+                     <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                        <i class="fab fa-font-awesome-flag text-blue-600 text-xl"></i>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900">Font Awesome</h4>
+                </div>
+                <p class="text-gray-600 text-sm flex-grow">
+                    Широкий набір масштабованих векторних іконок надається бібліотекою Font Awesome для покращення візуального сприйняття інтерфейсу.
+                </p>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col" data-aos="fade-up" data-aos-delay="350">
+                <div class="flex items-center mb-3">
+                     <div class="flex-shrink-0 h-10 w-10 rounded-full bg-teal-100 flex items-center justify-center mr-3">
+                        <i class="fas fa-feather-alt text-teal-600 text-xl"></i> </div>
+                    <h4 class="text-lg font-semibold text-gray-900">AOS - Animate On Scroll</h4>
+                </div>
+                <p class="text-gray-600 text-sm flex-grow">
+                    Ефекти анімації при прокручуванні сторінки реалізовані за допомогою бібліотеки AOS.css, що додає динаміки елементам.
+                </p>
+            </div>
+             <div class="bg-gray-50 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col" data-aos="fade-up" data-aos-delay="400">
+                <div class="flex items-center mb-3">
+                     <div class="flex-shrink-0 h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center mr-3">
+                        <i class="fas fa-mobile-alt text-orange-600 text-xl"></i>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900">Адаптивний Дизайн</h4>
+                </div>
+                <p class="text-gray-600 text-sm flex-grow">
+                    Веб-застосунок повністю адаптивний та коректно відображається на всіх пристроях: комп'ютерах, планшетах та смартфонах.
+                </p>
+            </div>
+             <div class="bg-gray-50 p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col" data-aos="fade-up" data-aos-delay="450">
+                <div class="flex items-center mb-3">
+                     <div class="flex-shrink-0 h-10 w-10 rounded-full bg-pink-100 flex items-center justify-center mr-3">
+                        <i class="fas fa-list-alt text-pink-600 text-xl"></i>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900">Каталог та Відгуки</h4>
+                </div>
+                <p class="text-gray-600 text-sm flex-grow">
+                    Інтуїтивно зрозумілий каталог товарів та послуг, система рейтингів та відгуків для допомоги у виборі.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-16 bg-gradient-to-b from-indigo-50 to-white overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12" data-aos="fade-up">
+            <h2 class="text-3xl font-bold text-gray-900">Залишилися питання або є пропозиції?</h2>
+            <p class="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">
+                Ми завжди відкриті до ваших відгуків та готові обговорити проєкт.
+            </p>
+        </div>
+        <div class="max-w-lg mx-auto bg-white p-8 rounded-xl shadow-2xl" data-aos="zoom-in-up">
+            <div class="text-center">
+                <p class="text-gray-700 mb-4">Зв'яжіться з нами через електронну пошту або соціальні мережі:</p>
+                <a href="mailto:margaryta.kiyan@kitu.nau.edu.ua" class="inline-block px-6 py-3 text-md font-semibold text-white bg-indigo-600 rounded-full shadow-md hover:bg-indigo-700 transition duration-300 transform hover:scale-105 mb-6">
+                    <i class="fas fa-envelope mr-2"></i> Написати на Email
+                </a>
+
+                <div class="flex justify-center space-x-6">
+                    <a href="https://www.instagram.com/margokiyan/" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-purple-600 transition duration-300" title="Instagram">
+                        <i class="fab fa-instagram fa-2x"></i>
+                    </a>
+                    <a href="https://www.facebook.com/profile.php?id=100027941174366" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-blue-600 transition duration-300" title="Facebook">
+                        <i class="fab fa-facebook-square fa-2x"></i>
+                    </a>
+                     <a href="https://github.com/MargarytaKyian" target="_blank" rel="noopener noreferrer" class="text-gray-500 hover:text-black transition duration-300" title="Github">
+                        <i class="fab fa-github fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+         <div class="text-center mt-12" data-aos="fade-up">
+            <a href="{% url 'main:product_list' %}"
+               class="inline-block px-8 py-3 text-lg font-semibold text-white bg-purple-600 rounded-full shadow-md hover:bg-purple-700 transition duration-300 transform hover:scale-105">
+                Перейти до магазину <i class="fas fa-store ml-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

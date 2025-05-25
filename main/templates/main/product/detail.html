@@ -369,68 +369,44 @@
           </div>
 
           <div x-show="activeTab === 'delivery'" class="text-sm text-gray-600 space-y-5">
-            <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-4">Умови доставки та оплати:</h3>
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Умови доставки та оплати:</h3>
             
             <div class="p-4 bg-gray-50 rounded-lg shadow">
-                <h4 class="font-semibold text-gray-700 mb-2 text-base">Способи доставки:</h4>
-                <ul class="list-disc list-inside space-y-1.5 pl-2">
-                    <li><i class="fas fa-truck text-indigo-500 mr-1.5"></i> <strong>Нова Пошта:</strong>
-                        <ul class="list-circle list-inside space-y-1 pl-6 text-xs text-gray-500">
-                            <li>У відділення по Україні (1-3 дні).</li>
-                            <li>Кур'єром за адресою (1-3 дні).</li>
-                            <li>У поштомат (1-3 дні).</li>
-                        </ul>
-                    </li>
-                    <li><i class="fas fa-shipping-fast text-indigo-500 mr-1.5"></i> <strong>Укрпошта:</strong>
-                        <ul class="list-circle list-inside space-y-1 pl-6 text-xs text-gray-500">
-                            <li>Експрес-доставка у відділення (2-5 днів).</li>
-                            <li>Стандартна доставка у відділення (3-7 днів).</li>
-                        </ul>
-                    </li>
-                    <li><i class="fas fa-store text-indigo-500 mr-1.5"></i> <strong>Самовивіз з нашого магазину:</strong>
-                        <ul class="list-circle list-inside space-y-1 pl-6 text-xs text-gray-500">
-                            <li>м. Київ, вул. Затишна, 1 (Пн-Пт: 10:00-19:00, Сб: 10:00-17:00).</li>
-                            <li>Безкоштовно, замовлення готове протягом 1-2 годин після підтвердження.</li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+                  <h4 class="font-semibold text-gray-700 mb-2 text-base"><i class="fas fa-truck text-indigo-500 mr-1.5"></i> Способи доставки:</h4>
+                  <ul class="list-disc list-inside space-y-1.5 pl-2">
+                      <li><strong>Нова Пошта (1-3 дні):</strong> відділення, кур'єр, поштомат.</li>
+                      <li><strong>Укрпошта (2-7 днів):</strong> експрес/стандарт у відділення.</li>
+                      <li><strong>Самовивіз (Київ, вул. Затишна, 1):</strong> Пн-Пт: 10-19, Сб: 10-17. Безкоштовно, готове за 1-2 год.</li>
+                  </ul>
+              </div>
 
-            <div class="p-4 bg-gray-50 rounded-lg shadow">
-                <h4 class="font-semibold text-gray-700 mb-2 text-base">Вартість доставки:</h4>
-                <ul class="list-disc list-inside space-y-1.5 pl-2">
-                    <li><i class="fas fa-dollar-sign text-green-500 mr-1.5"></i> <strong>Безкоштовна доставка:</strong> На замовлення від 1500 грн (при оплаті онлайн).</li>
-                    <li><i class="fas fa-file-invoice-dollar text-gray-500 mr-1.5"></i> <strong>За тарифами перевізника:</strong> 
-                        Для замовлень до 1500 грн або при виборі післяплати. Вартість розраховується перевізником залежно від ваги, габаритів та відстані.</li>
-                    <li><i class="fas fa-hand-holding-usd text-gray-500 mr-1.5"></i> <strong>Післяплата ("наложений платіж"):</strong> 
-                        Додатково стягується комісія перевізника за переказ коштів (зазвичай 20 грн + 2% від суми).</li>
-                </ul>
-            </div>
+              <div class="p-4 bg-gray-50 rounded-lg shadow">
+                  <h4 class="font-semibold text-gray-700 mb-2 text-base"><i class="fas fa-dollar-sign text-green-500 mr-1.5"></i> Вартість доставки:</h4>
+                  <ul class="list-disc list-inside space-y-1.5 pl-2">
+                      <li><strong>Безкоштовно:</strong> для замовлень від 1500 грн (при онлайн оплаті).</li>
+                      <li><strong>За тарифами перевізника:</strong> для замовлень до 1500 грн або при післяплаті.</li>
+                      <li><strong>Післяплата:</strong> додатково комісія перевізника (20 грн + 2% від суми).</li>
+                  </ul>
+              </div>
 
-            <div class="p-4 bg-gray-50 rounded-lg shadow">
-                <h4 class="font-semibold text-gray-700 mb-2 text-base">Терміни відправки:</h4>
-                <ul class="list-disc list-inside space-y-1.5 pl-2">
-                    <li><i class="fas fa-calendar-check text-indigo-500 mr-1.5"></i> Замовлення, оформлені та підтверджені до 15:00, відправляються в той же робочий день.</li>
-                    <li><i class="fas fa-calendar-day text-indigo-500 mr-1.5"></i> Замовлення, оформлені після 15:00 або у вихідні/святкові дні, відправляються на наступний робочий день.</li>
-                </ul>
-            </div>
-            
-            <div class="p-4 bg-gray-50 rounded-lg shadow">
-                <h4 class="font-semibold text-gray-700 mb-2 text-base">Способи оплати:</h4>
-                <ul class="list-disc list-inside space-y-1.5 pl-2">
-                    <li><i class="fab fa-cc-visa text-blue-600 mr-1.5"></i> Онлайн-оплата карткою Visa/MasterCard (Stripe).</li>
-                    <li><i class="fas fa-money-bill-wave text-green-600 mr-1.5"></i> Післяплата при отриманні у відділенні перевізника.</li>
-                    <li><i class="fas fa-cash-register text-yellow-600 mr-1.5"></i> Готівкою або карткою при самовивозі.</li>
-                </ul>
-            </div>
+              <div class="p-4 bg-gray-50 rounded-lg shadow">
+                  <h4 class="font-semibold text-gray-700 mb-2 text-base"><i class="fas fa-calendar-check text-indigo-500 mr-1.5"></i> Терміни відправки:</h4>
+                  <ul class="list-disc list-inside space-y-1.5 pl-2">
+                      <li>Замовлення до 15:00 – відправка в той же робочий день.</li>
+                      <li>Замовлення після 15:00 / у вихідні – наступного робочого дня.</li>
+                  </ul>
+              </div>
+              
+              <div class="p-4 bg-gray-50 rounded-lg shadow">
+                  <h4 class="font-semibold text-gray-700 mb-2 text-base"><i class="fas fa-credit-card text-blue-600 mr-1.5"></i> Способи оплати:</h4>
+                  <ul class="list-disc list-inside space-y-1.5 pl-2">
+                      <li>Онлайн карткою Visa/MasterCard (через Stripe).</li>
+                      <li>Післяплата при отриманні (у перевізника).</li>
+                      <li>Готівкою або карткою при самовивозі.</li>
+                  </ul>
+              </div>
 
             <div class="mt-6 text-center sm:text-left">
-                <p class="text-gray-700">
-                    Більш детальну інформацію про умови доставки, оплати, повернення товарів, а також про наш магазин ви можете знайти на сторінці
-                    <a href="#" class="text-indigo-600 hover:text-indigo-800 font-medium underline transition duration-150 ease-in-out">
-                        "Про нас та умови сервісу"
-                    </a>.
-                </p>
                 <p class="text-xs text-gray-500 mt-1">
                     Ми завжди раді допомогти вам з вибором та відповісти на ваші запитання!
                 </p>

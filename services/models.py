@@ -9,7 +9,6 @@ class Service(models.Model):
     full_description = models.TextField(verbose_name="Повний опис (для деталей)")
     image = models.ImageField(upload_to='services_images/', blank=True, null=True, verbose_name="Зображення")
     
-    # Поля для кастомізації картки послуги в шаблоні
     icon_class = models.CharField(max_length=100, default="fas fa-clinic-medical", verbose_name="Клас іконки Font Awesome (напр., fas fa-paw)")
     icon_color_class = models.CharField(max_length=50, default="text-indigo-500", verbose_name="Клас кольору іконки (напр., text-pink-500)")
     button_text = models.CharField(max_length=50, default="Записатися", verbose_name="Текст кнопки")

@@ -14,4 +14,5 @@ urlpatterns = [
      path('search-autocomplete/', views.autocomplete, name='autocomplete'),
      path('search/', views.product_search, name='product_search'),
      path('submit-review/<int:product_id>/', views.submit_review, name='submit_review'),
+     path('about/', views.about_view, name='about_page'),
 ]
