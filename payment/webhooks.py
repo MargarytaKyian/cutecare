@@ -3,7 +3,6 @@ from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from orders.models import Order
-from main.models import Product
 
 
 @csrf_exempt
@@ -37,3 +36,4 @@ def stripe_webhook(request):
                 return HttpResponse("Order not found", status=404)
 
     return HttpResponse("Webhook received", status=200)
+

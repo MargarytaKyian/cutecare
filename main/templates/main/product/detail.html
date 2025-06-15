@@ -249,10 +249,10 @@
           <div x-show="activeTab === 'details'" class="text-sm text-gray-600">
               <h3 class="text-lg font-semibold text-gray-800 mb-3">Детальні характеристики:</h3>
               <ul class="space-y-1.5">
-                  <li><strong>Тип корму:</strong> {{ product.type|default:"Не вказано" }}</li>
+                  <li><strong>Тип:</strong> {{ product.type|default:"Не вказано" }}</li>
                   <li><strong>Клас:</strong> {{ product.product_class|default:"Не вказано" }}</li>
                   <li><strong>Призначення:</strong> {{ product.target_animal|default:"Для домашніх улюбленців" }} {{ product.target_age|default:"" }}</li>
-                  <li><strong>Основні інгредієнти:</strong> {{ product.main_ingredients|default:"Див. на упаковці" }}</li>
+                  <li><strong>Склад:</strong> {{ product.main_ingredients|default:"Див. на упаковці" }}</li>
                   <li><strong>Вага упаковки:</strong> {{ product.weight_variants|join:", "|default:"Не вказано" }}</li>
                   <li><strong>Виробник:</strong> {{ product.manufacturer.name|default:"CuteCare Pets Inc." }}</li>
                   <li><strong>Термін придатності:</strong> {{ product.shelf_life|default:"18 місяців" }}</li>

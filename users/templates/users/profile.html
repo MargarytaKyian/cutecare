@@ -33,7 +33,7 @@
                     <div class="flex flex-col md:flex-row text-sm">
                         <div class="flex-1 space-y-3 pr-4">
                             <div><span class="font-medium text-gray-500">Логін:</span> <span id="loginText" class="text-gray-900">{{ user.username }}</span></div>
-                            <div><span class="font-medium text-gray-500">Електронна пошта:</span> <span id="emailText" class="text-gray-900 break-all">{{ user.email }}</span></div>
+                            <div><span class="font-medium text-gray-500">E-mail:</span> <span id="emailText" class="text-gray-900 break-all">{{ user.email }}</span></div>
                             <div><span class="font-medium text-gray-500">Номер телефону:</span> <span id="phoneText" class="text-gray-900">{{ user.phone_number|default:"Не вказано" }}</span></div>
                         </div>
                         <div class="w-full md:w-px h-px md:h-auto bg-gray-200 my-4 md:my-0 md:mx-4"></div>
@@ -365,7 +365,7 @@
                         </div>
                     </div>
                     <div>
-                        <label for="editCity" class="block text-sm font-medium text-gray-700 mb-1">Країна</label>
+                        <label for="editCity" class="block text-sm font-medium text-gray-700 mb-1">Місто</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none"><i class="fas fa-city text-gray-400"></i></div>
                             <input id="editCity" name="city" type="text" placeholder="Введіть країну" value="{{ user.city|default:'' }}"
